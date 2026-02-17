@@ -1,0 +1,2891 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "mysql",
+  "tables": {
+    "aset_jual": {
+      "name": "aset_jual",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "autoincrement": false,
+          "name": "harga",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "aset_modal": {
+      "name": "aset_modal",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_user": {
+          "autoincrement": false,
+          "name": "id_user",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "autoincrement": false,
+          "name": "harga",
+          "type": "int(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "int(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "bahan_baku": {
+      "name": "bahan_baku",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_bahan": {
+          "autoincrement": false,
+          "name": "nama_bahan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "autoincrement": false,
+          "name": "harga",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "biaya_lain": {
+      "name": "biaya_lain",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "autoincrement": false,
+          "name": "type",
+          "type": "enum('ppn','biaya_layanan')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "autoincrement": false,
+          "name": "value",
+          "type": "float",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "diskon": {
+      "name": "diskon",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipe": {
+          "autoincrement": false,
+          "name": "tipe",
+          "type": "enum('harga','persen')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "features": {
+      "name": "features",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "autoincrement": false,
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "kategori": {
+      "name": "kategori",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_kategori": {
+          "autoincrement": false,
+          "name": "nama_kategori",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "icon",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {
+        "idx_nama": {
+          "name": "idx_nama",
+          "columns": [
+            "nama_kategori"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "kategori_catatan": {
+      "name": "kategori_catatan",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jenis": {
+          "autoincrement": false,
+          "name": "jenis",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "kategori_customer": {
+      "name": "kategori_customer",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "menus": {
+      "name": "menus",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "autoincrement": false,
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "icon",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "route",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "parent_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {
+        "parent_id": {
+          "name": "parent_id",
+          "columns": [
+            "parent_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "menus_ibfk_1": {
+          "name": "menus_ibfk_1",
+          "tableFrom": "menus",
+          "tableTo": "menus",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "restrict"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "metode_pembayaran": {
+      "name": "metode_pembayaran",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_metode": {
+          "autoincrement": false,
+          "name": "nama_metode",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipe": {
+          "autoincrement": false,
+          "name": "tipe",
+          "type": "enum('cash','wallet','transfer')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gambar": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "gambar",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "migrations": {
+      "name": "migrations",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "bigint(20) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "autoincrement": false,
+          "name": "version",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class": {
+          "autoincrement": false,
+          "name": "class",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group": {
+          "autoincrement": false,
+          "name": "group",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "namespace": {
+          "autoincrement": false,
+          "name": "namespace",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "time": {
+          "autoincrement": false,
+          "name": "time",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "batch": {
+          "autoincrement": false,
+          "name": "batch",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "order": {
+      "name": "order",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_user": {
+          "autoincrement": false,
+          "name": "id_user",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uuid_order": {
+          "autoincrement": false,
+          "name": "uuid_order",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kode_order": {
+          "autoincrement": false,
+          "name": "kode_order",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_pelanggan": {
+          "autoincrement": false,
+          "name": "id_pelanggan",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sub_total": {
+          "autoincrement": false,
+          "name": "sub_total",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diskon": {
+          "autoincrement": false,
+          "name": "diskon",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "biaya_layanan": {
+          "autoincrement": false,
+          "name": "biaya_layanan",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ppn": {
+          "autoincrement": false,
+          "name": "ppn",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "autoincrement": false,
+          "name": "total",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pembayaran": {
+          "autoincrement": false,
+          "name": "pembayaran",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uang_dibayar": {
+          "autoincrement": false,
+          "name": "uang_dibayar",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kembalian": {
+          "autoincrement": false,
+          "name": "kembalian",
+          "type": "decimal(30,0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tanggal": {
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "order_items": {
+      "name": "order_items",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_order": {
+          "autoincrement": false,
+          "name": "id_order",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kode_order": {
+          "autoincrement": false,
+          "name": "kode_order",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_produk": {
+          "autoincrement": false,
+          "name": "id_produk",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "autoincrement": false,
+          "name": "quantity",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "autoincrement": false,
+          "name": "harga",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga_total": {
+          "autoincrement": false,
+          "name": "harga_total",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "pelanggan": {
+      "name": "pelanggan",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "kategori_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "autoincrement": false,
+          "name": "hp",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "pemasukan": {
+      "name": "pemasukan",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori": {
+          "autoincrement": false,
+          "name": "kategori",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "autoincrement": false,
+          "name": "total",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catatan": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "catatan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_pelanggan": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_pelanggan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tanggal": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "pengeluaran": {
+      "name": "pengeluaran",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori": {
+          "autoincrement": false,
+          "name": "kategori",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "autoincrement": false,
+          "name": "total",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catatan": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "catatan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_pelanggan": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_pelanggan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tanggal": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "permissions": {
+      "name": "permissions",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "autoincrement": false,
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "piutang": {
+      "name": "piutang",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pelanggan": {
+          "autoincrement": false,
+          "name": "pelanggan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "autoincrement": false,
+          "name": "total",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catatan": {
+          "autoincrement": false,
+          "name": "catatan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tempo": {
+          "autoincrement": false,
+          "name": "tempo",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tanggal": {
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "default": 1,
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "produk": {
+      "name": "produk",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kode_produk": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "kode_produk",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "store_barcode": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "store_barcode",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "barcode_toko": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "barcode_toko",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori": {
+          "autoincrement": false,
+          "name": "kategori",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "autoincrement": false,
+          "name": "harga",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modal": {
+          "autoincrement": false,
+          "name": "modal",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_modal": {
+          "autoincrement": false,
+          "name": "total_modal",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "satuan": {
+          "autoincrement": false,
+          "name": "satuan",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stok": {
+          "autoincrement": false,
+          "name": "stok",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diskon": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "diskon",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "margin": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "margin",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "harga_reg": {
+          "default": "'0.000000'",
+          "autoincrement": false,
+          "name": "harga_reg",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "harga_post": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "harga_post",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nett_margin": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "nett_margin",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "default": 1,
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {
+        "idx_deleted": {
+          "name": "idx_deleted",
+          "columns": [
+            "deleted"
+          ],
+          "isUnique": false
+        },
+        "idx_kategori": {
+          "name": "idx_kategori",
+          "columns": [
+            "kategori"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "reward": {
+      "name": "reward",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "role_permissions": {
+      "name": "role_permissions",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role_id": {
+          "autoincrement": false,
+          "name": "role_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "feature_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "feature_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "menu_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "menu_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_view": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "can_view",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_create": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "can_create",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_edit": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "can_edit",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_delete": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "can_delete",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "satuan": {
+      "name": "satuan",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_satuan": {
+          "autoincrement": false,
+          "name": "nama_satuan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "setting": {
+      "name": "setting",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "autoincrement": false,
+          "name": "nama",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "autoincrement": false,
+          "name": "hp",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "autoincrement": false,
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alamat": {
+          "autoincrement": false,
+          "name": "alamat",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "autoincrement": false,
+          "name": "deskripsi",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "catatankaki": {
+          "autoincrement": false,
+          "name": "catatankaki",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "stok": {
+      "name": "stok",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_produk": {
+          "autoincrement": false,
+          "name": "id_produk",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_user": {
+          "autoincrement": false,
+          "name": "id_user",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_supplayer": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_supplayer",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_warehaouse": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_warehaouse",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nilai": {
+          "autoincrement": false,
+          "name": "nilai",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jenis": {
+          "autoincrement": false,
+          "name": "jenis",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "update_at": {
+          "default": "'current_timestamp()'",
+          "autoincrement": false,
+          "name": "update_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "stok_barang": {
+      "name": "stok_barang",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_id": {
+          "autoincrement": false,
+          "name": "product_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "warehouse_id": {
+          "autoincrement": false,
+          "name": "warehouse_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplier_id": {
+          "autoincrement": false,
+          "name": "supplier_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "autoincrement": false,
+          "name": "jumlah",
+          "type": "int(15)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stokawal": {
+          "autoincrement": false,
+          "name": "stokawal",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stok_terjual": {
+          "autoincrement": false,
+          "name": "stok_terjual",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stokakhir": {
+          "autoincrement": false,
+          "name": "stokakhir",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keterangan": {
+          "autoincrement": false,
+          "name": "keterangan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "store_pp": {
+      "name": "store_pp",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_toko": {
+          "autoincrement": false,
+          "name": "nama_toko",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logo": {
+          "autoincrement": false,
+          "name": "logo",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "autoincrement": false,
+          "name": "deskripsi",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supliers": {
+      "name": "supliers",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nama_supplier": {
+          "autoincrement": false,
+          "name": "nama_supplier",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alamat": {
+          "autoincrement": false,
+          "name": "alamat",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "autoincrement": false,
+          "name": "hp",
+          "type": "int(15)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "autoincrement": false,
+          "name": "email",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keterangan": {
+          "autoincrement": false,
+          "name": "keterangan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "default": "'''aktif'''",
+          "autoincrement": false,
+          "name": "status",
+          "type": "enum('aktif','non_aktif')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplier_deliveries": {
+      "name": "supplier_deliveries",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplier_id": {
+          "autoincrement": false,
+          "name": "supplier_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_id": {
+          "autoincrement": false,
+          "name": "product_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_number": {
+          "autoincrement": false,
+          "name": "invoice_number",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entry_date": {
+          "autoincrement": false,
+          "name": "entry_date",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "autoincrement": false,
+          "name": "quantity",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_value": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "total_value",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "unit_cost": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "unit_cost",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "average_cost": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "average_cost",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_method": {
+          "default": "'''CASH'''",
+          "autoincrement": false,
+          "name": "payment_method",
+          "type": "enum('CASH','TOP')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "top_days": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "top_days",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stock_after": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "stock_after",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modal_after": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "modal_after",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_value_after": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "total_value_after",
+          "type": "decimal(17,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "selling_price_after": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "selling_price_after",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplier_payments": {
+      "name": "supplier_payments",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purchase_id": {
+          "autoincrement": false,
+          "name": "purchase_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "autoincrement": false,
+          "name": "amount",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_method": {
+          "default": "'''CASH'''",
+          "autoincrement": false,
+          "name": "payment_method",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "autoincrement": false,
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paid_at": {
+          "autoincrement": false,
+          "name": "paid_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplier_purchases": {
+      "name": "supplier_purchases",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "supplier_id": {
+          "autoincrement": false,
+          "name": "supplier_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tanggal": {
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nomor_faktur": {
+          "autoincrement": false,
+          "name": "nomor_faktur",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nomor_so": {
+          "autoincrement": false,
+          "name": "nomor_so",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nomor_po": {
+          "autoincrement": false,
+          "name": "nomor_po",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "salesman": {
+          "autoincrement": false,
+          "name": "salesman",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gudang": {
+          "autoincrement": false,
+          "name": "gudang",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "total",
+          "type": "decimal(20,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paid_amount": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "paid_amount",
+          "type": "decimal(20,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "default": "'''unpaid'''",
+          "autoincrement": false,
+          "name": "status",
+          "type": "enum('unpaid','partial','paid')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "catatan": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "catatan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entry_date": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "entry_date",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_method": {
+          "default": "'''CASH'''",
+          "autoincrement": false,
+          "name": "payment_method",
+          "type": "enum('CASH','TOP')",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "top_days": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "top_days",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplier_purchase_items": {
+      "name": "supplier_purchase_items",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purchase_id": {
+          "autoincrement": false,
+          "name": "purchase_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "product_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "product_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sku": {
+          "autoincrement": false,
+          "name": "sku",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kode_produk": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "kode_produk",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nama_produk": {
+          "autoincrement": false,
+          "name": "nama_produk",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "quantity",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "harga",
+          "type": "decimal(20,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modal": {
+          "default": "'0.000000'",
+          "autoincrement": false,
+          "name": "modal",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_modal": {
+          "default": "'0.000000'",
+          "autoincrement": false,
+          "name": "total_modal",
+          "type": "decimal(20,6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subtotal": {
+          "default": "'0.00'",
+          "autoincrement": false,
+          "name": "subtotal",
+          "type": "decimal(20,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "autoincrement": false,
+          "name": "username",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "autoincrement": false,
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "autoincrement": false,
+          "name": "role",
+          "type": "enum('superadmin','admin','admintoko','kasir')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "autoincrement": false,
+          "name": "hp",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_lengkap": {
+          "autoincrement": false,
+          "name": "nama_lengkap",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_premium": {
+          "autoincrement": false,
+          "name": "is_premium",
+          "type": "double",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role_id": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "role_id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "package_type": {
+          "autoincrement": false,
+          "name": "package_type",
+          "type": "enum('free','premium','super')",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "user_permissions": {
+      "name": "user_permissions",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "bigint(20) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "autoincrement": false,
+          "name": "user_id",
+          "type": "bigint(20) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permission": {
+          "autoincrement": false,
+          "name": "permission",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "bigint(20) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "utang": {
+      "name": "utang",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_toko": {
+          "autoincrement": false,
+          "name": "id_toko",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pelanggan": {
+          "autoincrement": false,
+          "name": "pelanggan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "autoincrement": false,
+          "name": "total",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catatan": {
+          "autoincrement": false,
+          "name": "catatan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tempo": {
+          "autoincrement": false,
+          "name": "tempo",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tanggal": {
+          "autoincrement": false,
+          "name": "tanggal",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deleted": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "deleted",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "warehouses": {
+      "name": "warehouses",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "int(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama_gudang": {
+          "autoincrement": false,
+          "name": "nama_gudang",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lokasi": {
+          "autoincrement": false,
+          "name": "lokasi",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "autoincrement": false,
+          "name": "hp",
+          "type": "int(15)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "autoincrement": false,
+          "name": "email",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keterangan": {
+          "autoincrement": false,
+          "name": "keterangan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "default": 1,
+          "autoincrement": false,
+          "name": "status",
+          "type": "tinyint(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto": {
+          "default": "'NULL'",
+          "autoincrement": false,
+          "name": "foto",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    }
+  },
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
+  }
+}
