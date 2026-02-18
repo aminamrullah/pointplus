@@ -558,7 +558,10 @@ export const importCalculator = async (
 
         if (!jsonData || jsonData.length === 0) return reply.status(400).send({ status: "error", message: "File kosong atau format tidak valid" });
 
+        // Normalize headers
         const headers = jsonData[0].map((h) => String(h).trim().toLowerCase());
+        console.log("Import Headers Detected:", headers);
+
         const dataRows = jsonData.slice(1);
 
         const [allCategories, allUnits] = await Promise.all([
@@ -576,46 +579,63 @@ export const importCalculator = async (
         const inserted = [];
         const errors = [];
 
+        // Debug Log
+        console.log(`Processing ${dataRows.length} rows for Store ID: ${id_toko}`);
+
         for (let i = 0; i < dataRows.length; i++) {
             const row = dataRows[i];
+            // Skip empty rows
             if (!row || row.length === 0 || row.every((cell) => !cell || String(cell).trim() === "")) continue;
 
             const values = row.map((cell) => (cell !== undefined && cell !== null) ? String(cell).trim() : "");
+
+            // Map row values to headers for easier debugging/checking
             const rowMap = {};
             headers.forEach((header, index) => { rowMap[header] = values[index] || ""; });
 
-            if (!rowMap["nama"] && !rowMap["kode produk"] && !rowMap["barcode"] && !rowMap["barcode pabrik"] && !rowMap["barcode toko"]) continue;
+            // Check if essential identity columns are empty
+            if (!rowMap["nama"] && !rowMap["kode produk"] && !rowMap["barcode"] && !rowMap["barcode pabrik"] && !rowMap["barcode toko"]) {
+                console.log(`Row ${i + 2} skipped: No identity fields`);
+                continue;
+            }
 
             try {
+                // Feature Mapping
                 const namaIdx = headers.indexOf("nama");
                 const kodeProdukIdx = headers.indexOf("kode produk");
                 const barcodePabrikIdx = headers.indexOf("barcode pabrik");
                 const barcodeTokoIdx = headers.indexOf("barcode toko");
-                const barcodeIdx = headers.indexOf("barcode");
+                const barcodeIdx = headers.indexOf("barcode"); // Legacy/fallback
                 const kategoriIdx = headers.indexOf("kategori");
                 const satuanIdx = headers.indexOf("satuan");
 
                 let product = null;
+
+                // 1. Try Lookup by Store Barcode (Barcode Pabrik)
                 const searchBarcodePabrik = barcodePabrikIdx >= 0 && values[barcodePabrikIdx] ? values[barcodePabrikIdx] : (barcodeIdx >= 0 && values[barcodeIdx] ? values[barcodeIdx] : null);
 
                 if (searchBarcodePabrik) {
                     [product] = await db.select().from(produk).where(and(eq(produk.storeBarcode, searchBarcodePabrik), eq(produk.idToko, id_toko)));
                 }
 
+                // 2. Try Lookup by Shop Barcode (Barcode Toko)
                 const searchBarcodeToko = barcodeTokoIdx >= 0 && values[barcodeTokoIdx] ? values[barcodeTokoIdx] : null;
 
                 if (!product && searchBarcodeToko) {
                     [product] = await db.select().from(produk).where(and(eq(produk.barcode, searchBarcodeToko), eq(produk.idToko, id_toko)));
                 }
 
+                // 3. Try Lookup by Product Code
                 if (!product && kodeProdukIdx >= 0 && values[kodeProdukIdx]) {
                     [product] = await db.select().from(produk).where(and(eq(produk.kodeProduk, values[kodeProdukIdx]), eq(produk.idToko, id_toko)));
                 }
 
+                // 4. Try Lookup by Name
                 if (!product && namaIdx >= 0 && values[namaIdx]) {
                     [product] = await db.select().from(produk).where(and(eq(produk.nama, values[namaIdx]), eq(produk.idToko, id_toko)));
                 }
 
+                // Field Indices
                 const stokIdx = headers.indexOf("stok");
                 const modalIdx = headers.indexOf("modal (hpp)");
                 const marginIdx = headers.indexOf("margin %");
@@ -624,6 +644,7 @@ export const importCalculator = async (
                 const marginBersihIdx = headers.indexOf("margin bersih");
                 const diskonIdx = headers.indexOf("diskon");
 
+                // Parse Values
                 const stok = stokIdx >= 0 && values[stokIdx] ? parseInt(values[stokIdx]) : undefined;
                 const modal = modalIdx >= 0 && values[modalIdx] ? parseFloat(parseFloat(values[modalIdx]).toFixed(2)) : undefined;
                 const margin = marginIdx >= 0 && values[marginIdx] ? parseFloat(parseFloat(values[marginIdx]).toFixed(2)) : undefined;
@@ -633,54 +654,93 @@ export const importCalculator = async (
                 const diskon = diskonIdx >= 0 && values[diskonIdx] ? parseFloat(parseFloat(values[diskonIdx]).toFixed(2)) : undefined;
 
                 if (product) {
+                    console.log(`Row ${i + 2}: Found Product ID ${product.id} (${product.nama})`);
+
                     const updateData = { deleted: false, updatedAt: new Date() };
+
+                    // Only update if value matches valid type/content
                     if (stok !== undefined && !isNaN(stok)) updateData.stok = String(stok);
                     if (modal !== undefined && !isNaN(modal)) updateData.modal = String(modal);
                     if (margin !== undefined && !isNaN(margin)) updateData.margin = String(margin);
+
                     if (hargaReg !== undefined && !isNaN(hargaReg)) {
                         updateData.hargaReg = String(hargaReg);
-                        updateData.harga = String(hargaReg);
+                        updateData.harga = String(hargaReg); // Base price usually follows regular price
                     }
+
                     if (hargaPost !== undefined && !isNaN(hargaPost)) updateData.hargaPost = String(hargaPost);
                     if (nettMargin !== undefined && !isNaN(nettMargin)) updateData.nettMargin = String(nettMargin);
                     if (diskon !== undefined && !isNaN(diskon)) updateData.diskon = String(diskon);
 
+                    // If there are meaningful updates (more than just timestamp and deleted flag)
                     if (Object.keys(updateData).length > 2) {
                         await db.update(produk).set(updateData).where(eq(produk.id, product.id));
                         updated.push(product.nama);
+                    } else {
+                        console.log(`Row ${i + 2}: No meaningful changes detected`);
                     }
                 } else {
-                    if (namaIdx < 0 || !values[namaIdx]) { errors.push(`Baris ${i + 1}: Nama produk wajib diisi`); continue; }
+                    console.log(`Row ${i + 2}: Creating New Product - ${rowMap["nama"] || "Unknown"}`);
+
+                    if (namaIdx < 0 || !values[namaIdx]) {
+                        errors.push(`Baris ${i + 1}: Nama produk wajib diisi`);
+                        continue;
+                    }
+
                     const nama = values[namaIdx];
+
+                    // Identify Category
                     const categoryName = (kategoriIdx >= 0 ? values[kategoriIdx] : "Umum") || "Umum";
                     const normalizedCatName = categoryName.toLowerCase().trim();
                     let categoryId = categoryMap.get(normalizedCatName);
+
                     if (!categoryId) {
                         const [result] = await db.insert(kategori).values({ namaKategori: categoryName, idToko: id_toko, createdAt: new Date(), updatedAt: new Date() });
                         categoryId = result.insertId;
                         categoryMap.set(normalizedCatName, categoryId);
                     }
+
+                    // Identify Unit
                     const unitName = (satuanIdx >= 0 ? values[satuanIdx] : "Pcs") || "Pcs";
                     const normalizedUnitName = unitName.toLowerCase().trim();
                     let unitId = unitMap.get(normalizedUnitName);
+
                     if (!unitId) {
                         const [result] = await db.insert(satuan).values({ namaSatuan: unitName, idToko: id_toko, createdAt: new Date(), updatedAt: new Date() });
                         unitId = result.insertId;
                         unitMap.set(normalizedUnitName, unitId);
                     }
+
                     await db.insert(produk).values({
-                        idToko: id_toko, nama, kodeProduk: kodeProdukIdx >= 0 ? values[kodeProdukIdx] : "",
-                        storeBarcode: searchBarcodePabrik || "", barcode: searchBarcodeToko || "",
-                        kategori: String(categoryId), satuan: String(unitId), stok: String(stok || 0),
-                        harga: String(hargaReg || 0), modal: String(modal || 0), margin: margin ? String(margin) : undefined,
-                        hargaReg: hargaReg ? String(hargaReg) : undefined, hargaPost: hargaPost ? String(hargaPost) : undefined,
-                        nettMargin: nettMargin ? String(nettMargin) : undefined, diskon: diskon ? String(diskon) : undefined,
-                        status: true, createdAt: new Date(), updatedAt: new Date()
+                        idToko: id_toko,
+                        nama,
+                        kodeProduk: kodeProdukIdx >= 0 ? values[kodeProdukIdx] : "",
+                        storeBarcode: searchBarcodePabrik || "",
+                        barcode: searchBarcodeToko || "",
+                        kategori: String(categoryId),
+                        satuan: String(unitId),
+                        stok: String(stok || 0),
+                        harga: String(hargaReg || 0),
+                        modal: String(modal || 0),
+                        margin: margin ? String(margin) : undefined,
+                        hargaReg: hargaReg ? String(hargaReg) : undefined,
+                        hargaPost: hargaPost ? String(hargaPost) : undefined,
+                        nettMargin: nettMargin ? String(nettMargin) : undefined,
+                        diskon: diskon ? String(diskon) : undefined,
+                        status: true,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
                     });
                     inserted.push(nama);
                 }
-            } catch (error) { errors.push(`Baris ${i + 1}: ${error.message}`); }
+            } catch (error) {
+                console.error(`Error processing row ${i + 2}:`, error);
+                errors.push(`Baris ${i + 1}: ${error.message}`);
+            }
         }
+
+        console.log(`Import Summary: ${inserted.length} inserted, ${updated.length} updated, ${errors.length} errors`);
+
         return reply.send({
             status: "success",
             message: `Data kalkulator berhasil diimpor (${inserted.length} baru, ${updated.length} diperbarui)`,
