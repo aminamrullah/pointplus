@@ -544,6 +544,12 @@ export const importCalculator = async (
     request,
     reply,
 ) => {
+    const logs = [];
+    const log = (msg) => {
+        console.log(msg);
+        logs.push(msg);
+    };
+
     try {
         const user = request.user;
         const id_toko = user.id_toko;
@@ -560,7 +566,7 @@ export const importCalculator = async (
 
         // Normalize headers
         const headers = jsonData[0].map((h) => String(h).trim().toLowerCase());
-        console.log("Import Headers Detected:", headers);
+        log(`Import Headers Detected: ${JSON.stringify(headers)}`);
 
         const dataRows = jsonData.slice(1);
 
@@ -580,7 +586,7 @@ export const importCalculator = async (
         const errors = [];
 
         // Debug Log
-        console.log(`Processing ${dataRows.length} rows for Store ID: ${id_toko}`);
+        log(`Processing ${dataRows.length} rows for Store ID: ${id_toko}`);
 
         for (let i = 0; i < dataRows.length; i++) {
             const row = dataRows[i];
@@ -595,7 +601,7 @@ export const importCalculator = async (
 
             // Check if essential identity columns are empty
             if (!rowMap["nama"] && !rowMap["kode produk"] && !rowMap["barcode"] && !rowMap["barcode pabrik"] && !rowMap["barcode toko"]) {
-                console.log(`Row ${i + 2} skipped: No identity fields`);
+                log(`Row ${i + 2} skipped: No identity fields`);
                 continue;
             }
 
@@ -654,7 +660,7 @@ export const importCalculator = async (
                 const diskon = diskonIdx >= 0 && values[diskonIdx] ? parseFloat(parseFloat(values[diskonIdx]).toFixed(2)) : undefined;
 
                 if (product) {
-                    console.log(`Row ${i + 2}: Found Product ID ${product.id} (${product.nama})`);
+                    log(`Row ${i + 2}: Found Product ID ${product.id} (${product.nama})`);
 
                     const updateData = { deleted: false, updatedAt: new Date() };
 
@@ -677,10 +683,10 @@ export const importCalculator = async (
                         await db.update(produk).set(updateData).where(eq(produk.id, product.id));
                         updated.push(product.nama);
                     } else {
-                        console.log(`Row ${i + 2}: No meaningful changes detected`);
+                        log(`Row ${i + 2}: No meaningful changes detected. Keys: ${Object.keys(updateData).join(", ")}`);
                     }
                 } else {
-                    console.log(`Row ${i + 2}: Creating New Product - ${rowMap["nama"] || "Unknown"}`);
+                    log(`Row ${i + 2}: Creating New Product - ${rowMap["nama"] || "Unknown"}`);
 
                     if (namaIdx < 0 || !values[namaIdx]) {
                         errors.push(`Baris ${i + 1}: Nama produk wajib diisi`);
@@ -734,17 +740,17 @@ export const importCalculator = async (
                     inserted.push(nama);
                 }
             } catch (error) {
-                console.error(`Error processing row ${i + 2}:`, error);
+                log(`Error processing row ${i + 2}: ${error.message}`);
                 errors.push(`Baris ${i + 1}: ${error.message}`);
             }
         }
 
-        console.log(`Import Summary: ${inserted.length} inserted, ${updated.length} updated, ${errors.length} errors`);
+        log(`Import Summary: ${inserted.length} inserted, ${updated.length} updated, ${errors.length} errors`);
 
         return reply.send({
             status: "success",
             message: `Data kalkulator berhasil diimpor (${inserted.length} baru, ${updated.length} diperbarui)`,
-            data: { updated: updated.length, inserted: inserted.length, errors }
+            data: { updated: updated.length, inserted: inserted.length, errors, logs }
         });
     } catch (error) {
         request.log.error(error);
