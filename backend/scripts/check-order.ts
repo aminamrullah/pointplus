@@ -2,9 +2,9 @@ import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.join(__dirname, "../backend/.env") });
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
-async function checkRest() {
+async function checkOrder() {
     try {
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -14,12 +14,13 @@ async function checkRest() {
             port: Number(process.env.DB_PORT) || 3306,
         });
 
-        const tables = ["kategori", "satuan", "pelanggan", "diskon", "metode_pembayaran", "biaya_lain", "setting"];
-        for (const table of tables) {
-            const [rows]: any = await connection.execute(`DESCRIBE \`${table}\``);
-            console.log(`${table} table structure:`);
-            console.table(rows);
-        }
+        const [rows]: any = await connection.execute("DESCRIBE `order` ");
+        console.log("Order table structure:");
+        console.table(rows);
+
+        const [rows2]: any = await connection.execute("DESCRIBE order_items");
+        console.log("Order Items table structure:");
+        console.table(rows2);
 
         await connection.end();
     } catch (error) {
@@ -27,4 +28,4 @@ async function checkRest() {
     }
 }
 
-checkRest();
+checkOrder();
