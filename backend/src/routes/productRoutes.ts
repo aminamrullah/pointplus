@@ -24,15 +24,6 @@ import { z } from "zod";
 export default async function productRoutes(fastify: FastifyInstance) {
   const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
 
-  // Auth Middleware
-  fastify.addHook("preHandler", async (request: FastifyRequest, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      reply.send(err);
-    }
-  });
-
   typedFastify.get("/", getProducts);
   typedFastify.get("/references", getReferences);
   typedFastify.post(

@@ -15,7 +15,6 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 export async function suplierRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getSuppliers);
     typedFastify.post("/", createSupplier);
     typedFastify.put("/:id", updateSupplier);
@@ -24,7 +23,6 @@ export async function suplierRoutes(fastify: FastifyInstance) {
 
 export async function supplierPurchaseRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getSupplierPurchases);
     typedFastify.get("/:id", getSupplierPurchases); // Should probably be getDetail, but use list for now
     typedFastify.post("/", createSupplierPurchase);
@@ -34,14 +32,12 @@ export async function supplierPurchaseRoutes(fastify: FastifyInstance) {
 
 export async function supplierDeliveryRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getSupplierDeliveries);
     typedFastify.post("/", createSupplierDelivery);
 }
 
 export async function supplierPaymentRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/:purchaseId", getSupplierPayments);
     typedFastify.post("/", createSupplierPayment);
 }

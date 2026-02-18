@@ -11,14 +11,12 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 export async function commonSettingRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getSetting);
     typedFastify.post("/simpan", saveSetting);
 }
 
 export async function pembayaranRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getPembayaran);
     typedFastify.post("/simpan", createPembayaran);
     typedFastify.put("/update/:id", updatePembayaran);
@@ -28,21 +26,18 @@ export async function pembayaranRoutes(fastify: FastifyInstance) {
 
 export async function rewardRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getReward);
     typedFastify.post("/simpan", saveReward);
 }
 
 export async function biayaRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getBiaya);
     typedFastify.post("/simpan", saveBiaya);
 }
 
 export async function diskonRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getDiskon);
     typedFastify.post("/simpan", createDiskon);
     typedFastify.put("/update/:id", updateDiskon);

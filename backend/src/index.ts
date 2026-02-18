@@ -54,19 +54,32 @@ const fastify = Fastify({
 fastify.setValidatorCompiler(validatorCompiler);
 fastify.setSerializerCompiler(serializerCompiler);
 
-// Handle empty JSON body - set to empty object instead of error
+// Handle global errors and prevent information leakage
 fastify.setErrorHandler(async (error: any, request, reply) => {
   if (error.code === "FST_ERR_CTP_EMPTY_JSON_BODY") {
     (request as any).body = {};
     return;
   }
 
-  // Default error handler
+  const isDev = process.env.NODE_ENV === "development";
+
+  // Log error for internal monitoring
+  request.log.error(error);
+
   if (!reply.sent) {
-    reply.code(error.statusCode || 500).send({
-      statusCode: error.statusCode || 500,
-      error: error.name || "Error",
-      message: error.message,
+    const statusCode = error.statusCode || 500;
+    reply.code(statusCode).send({
+      success: false,
+      status: "error",
+      message: statusCode === 500 && !isDev
+        ? "Terjadi kesalahan pada server. Silakan coba lagi nanti."
+        : error.message,
+      // Only send stack/details in dev
+      ...(isDev && {
+        error: error.name || "Error",
+        details: error.details,
+        stack: error.stack
+      }),
     });
   }
 });
@@ -76,18 +89,61 @@ import fastifyStatic from "@fastify/static";
 
 // Security Plugins
 fastify.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:", "*"],
+      fontSrc: ["'self'", "https:", "data:"],
+    },
+  },
   crossOriginResourcePolicy: { policy: "cross-origin" },
 });
+
+// Rate Limiting - General protection against Brute Force and DoS
 fastify.register(rateLimit, {
   max: 100,
   timeWindow: "1 minute",
+  errorResponseBuilder: (request, context) => {
+    return {
+      statusCode: 429,
+      error: "Too Many Requests",
+      message: "Terlalu banyak permintaan. Silakan tunggu sebentar.",
+    };
+  },
 });
+
+// CORS Configuration
 fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(",") || true,
+  origin: (origin, cb) => {
+    const allowed = process.env.ALLOWED_ORIGINS?.split(",") || [];
+    if (!origin || allowed.includes(origin) || process.env.NODE_ENV === "development") {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("Not allowed by CORS"), false);
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 });
-fastify.register(multipart);
+
+fastify.register(multipart, {
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit images to 5MB
+  },
+});
+
+// Request Sanitization Hook
+fastify.addHook("preValidation", async (request: any) => {
+  if (request.body && typeof request.body === "object" && !Array.isArray(request.body)) {
+    // Simple sanitization: Trim all strings in body
+    Object.keys(request.body).forEach((key) => {
+      if (typeof request.body[key] === "string") {
+        request.body[key] = request.body[key].trim();
+      }
+    });
+  }
+});
 
 // Serve static files
 fastify.register(fastifyStatic, {
@@ -100,10 +156,23 @@ fastify.register(jwt, {
   secret: process.env.JWT_SECRET || "super-secret-key",
 });
 
+import { authenticate } from "./middleware/auth";
+
 // Routes
 fastify.register(
   async (api: FastifyInstance) => {
-    api.register(authRoutes, { prefix: "/" });
+    // Global Auth Hook for all /api routes except public ones
+    api.addHook("preHandler", async (request, reply) => {
+      // List of public routes in /api
+      const publicRoutes = ["/login", "/health"];
+      const isPublic = publicRoutes.some(route => request.url.startsWith(`/api${route}`));
+
+      if (!isPublic) {
+        await authenticate(request, reply);
+      }
+    });
+
+    api.register(authRoutes, { prefix: "/" }); // /api/login is here
     api.register(productRoutes, { prefix: "/produk" });
     api.register(kasirRoutes, { prefix: "/kasir" });
     api.register(dashboardRoutes, { prefix: "/dashboard" });

@@ -11,7 +11,6 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 export async function pemasukanRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getPemasukan);
     typedFastify.get("/kategori", getKategoriCatatan);
     typedFastify.post("/kategori", createKategoriCatatan);
@@ -24,7 +23,6 @@ export async function pemasukanRoutes(fastify: FastifyInstance) {
 
 export async function pengeluaranRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getPengeluaran);
     typedFastify.post("/simpan", createPengeluaran);
     typedFastify.put("/update/:id", updatePengeluaran);
@@ -33,7 +31,6 @@ export async function pengeluaranRoutes(fastify: FastifyInstance) {
 
 export async function utangRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getUtang);
     typedFastify.post("/simpan", createUtang);
     typedFastify.put("/update/:id", updateUtang);
@@ -42,7 +39,6 @@ export async function utangRoutes(fastify: FastifyInstance) {
 
 export async function piutangRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getPiutang);
     typedFastify.post("/simpan", createPiutang);
     typedFastify.put("/update/:id", updatePiutang);
@@ -51,6 +47,5 @@ export async function piutangRoutes(fastify: FastifyInstance) {
 
 export async function penjualanRoutes(fastify: FastifyInstance) {
     const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-    fastify.addHook("preHandler", async (request, reply) => { try { await request.jwtVerify(); } catch (err) { reply.send(err); } });
     typedFastify.get("/", getPenjualan);
 }
