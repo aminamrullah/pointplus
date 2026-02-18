@@ -20,5 +20,3 @@ export const createOrderSchema = z.object({
     transactionId: z.string().optional(),
     items: z.array(orderItemSchema),
 });
-
-export type OrderInput = z.infer<typeof createOrderSchema>;

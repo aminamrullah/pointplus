@@ -1,13 +1,12 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { supliers, supplierDeliveries, supplierPurchases, supplierPurchaseItems, supplierPayments, produk } from "../db/schema";
+import { db } from "../db/index.js";
+import { supliers, supplierDeliveries, supplierPurchases, supplierPurchaseItems, supplierPayments, produk } from "../db/schema.js";
 import { eq, and, desc, sql } from "drizzle-orm";
-import { processImageField } from "../utils/imageUtils";
+import { processImageField } from "../utils/imageUtils.js";
 
 // Suppliers
-export const getSuppliers = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSuppliers = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const results = await db.select().from(supliers).where(eq(supliers.idToko, user.id_toko));
 
         // Map to snake_case for frontend
@@ -25,16 +24,16 @@ export const getSuppliers = async (request: FastifyRequest, reply: FastifyReply)
         }));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createSupplier = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createSupplier = async (request, reply) => {
     try {
-        const payload = request.body as any;
-        const user = request.user as any;
+        const payload = request.body;
+        const user = request.user;
 
         // Map snake_case payload to camelCase schema
         const supplierData = {
@@ -52,17 +51,17 @@ export const createSupplier = async (request: FastifyRequest, reply: FastifyRepl
 
         const [result] = await db.insert(supliers).values(supplierData);
         return reply.send({ status: "success", message: "Supplier berhasil disimpan", data: result });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan supplier" });
     }
 };
 
-export const updateSupplier = async (request: FastifyRequest, reply: FastifyReply) => {
+export const updateSupplier = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const payload = request.body as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const payload = request.body;
+        const user = request.user;
 
         const supplierData = {
             namaSupplier: payload.nama_supplier,
@@ -75,9 +74,9 @@ export const updateSupplier = async (request: FastifyRequest, reply: FastifyRepl
             updatedAt: new Date(),
         };
 
-        // Remove undefined keys to avoid overriding with undefined
+        // Remove undefined keys
         Object.keys(supplierData).forEach(key =>
-            (supplierData as any)[key] === undefined && delete (supplierData as any)[key]
+            supplierData[key] === undefined && delete supplierData[key]
         );
 
         await db.update(supliers)
@@ -85,34 +84,34 @@ export const updateSupplier = async (request: FastifyRequest, reply: FastifyRepl
             .where(and(eq(supliers.id, parseInt(id)), eq(supliers.idToko, user.id_toko)));
 
         return reply.send({ status: "success", message: "Supplier berhasil diperbarui" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal memperbarui supplier" });
     }
 };
 
-export const deleteSupplier = async (request: FastifyRequest, reply: FastifyReply) => {
+export const deleteSupplier = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const user = request.user;
         await db.delete(supliers).where(and(eq(supliers.id, parseInt(id)), eq(supliers.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Supplier berhasil dihapus" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menghapus supplier" });
     }
 };
 
 // Purchases
-export const getSupplierPurchases = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSupplierPurchases = async (request, reply) => {
     try {
-        const queryParams = request.query as any;
+        const queryParams = request.query;
         const page = parseInt(queryParams.page) || 1;
         const limit = parseInt(queryParams.limit) || 10;
         const offset = Math.max((page - 1) * limit, 0);
 
         const { supplier_id, status, dateFrom, dateTo } = queryParams;
-        const user = request.user as any;
+        const user = request.user;
 
         const conditions = [
             eq(supplierPurchases.deleted, false),
@@ -134,7 +133,7 @@ export const getSupplierPurchases = async (request: FastifyRequest, reply: Fasti
 
         // Count total
         const [totalCount] = await db
-            .select({ count: sql<number>`count(*)` })
+            .select({ count: sql`count(*)` })
             .from(supplierPurchases)
             .where(and(...conditions));
 
@@ -182,16 +181,16 @@ export const getSupplierPurchases = async (request: FastifyRequest, reply: Fasti
             page,
             limit
         });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createSupplierPurchase = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createSupplierPurchase = async (request, reply) => {
     try {
-        const { items, ...payload } = request.body as any;
-        const user = request.user as any;
+        const { items, ...payload } = request.body;
+        const user = request.user;
 
         // Map frontend snake_case payload to backend camelCase schema
         const purchaseData = {
@@ -223,7 +222,7 @@ export const createSupplierPurchase = async (request: FastifyRequest, reply: Fas
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
-            const purchaseId = (newPurchase as any).insertId;
+            const purchaseId = newPurchase.insertId;
 
             if (items && Array.isArray(items)) {
                 for (const item of items) {
@@ -257,8 +256,6 @@ export const createSupplierPurchase = async (request: FastifyRequest, reply: Fas
                             const purchaseQty = qty;
                             const purchasePrice = itemModal;
 
-                            // Calculate Weighted Average Cost (WAC)
-                            // (OldStock * OldAvg + NewQty * NewPrice) / (OldStock + NewQty)
                             const currentValuation = currentStock * currentModal;
                             const purchaseValuation = purchaseQty * purchasePrice;
                             const newStock = currentStock + purchaseQty;
@@ -270,11 +267,10 @@ export const createSupplierPurchase = async (request: FastifyRequest, reply: Fas
                                 newAvgModal = purchasePrice;
                             }
 
-                            // Update product with new Stock and Average Cost
                             await tx.update(produk).set({
                                 stok: String(newStock),
                                 modal: String(newAvgModal),
-                                totalModal: String(newStock * newAvgModal), // Ensure total asset value is updated
+                                totalModal: String(newStock * newAvgModal),
                                 updatedAt: new Date()
                             }).where(eq(produk.id, productId));
                         }
@@ -284,19 +280,18 @@ export const createSupplierPurchase = async (request: FastifyRequest, reply: Fas
             return { purchaseId };
         });
         return reply.send({ status: "success", message: "Pembelian berhasil disimpan", data: result });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan pembelian" });
     }
 };
 
 // Deliveries
-export const getSupplierDeliveries = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSupplierDeliveries = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const results = await db.select().from(supplierDeliveries).where(eq(supplierDeliveries.idToko, user.id_toko)).orderBy(desc(supplierDeliveries.createdAt));
 
-        // Map to snake_case if needed by frontend
         const data = results.map(d => ({
             id: d.id,
             supplier_id: d.supplierId,
@@ -319,19 +314,18 @@ export const getSupplierDeliveries = async (request: FastifyRequest, reply: Fast
         }));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createSupplierDelivery = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createSupplierDelivery = async (request, reply) => {
     try {
-        const payload = request.body as any;
-        const user = request.user as any;
+        const payload = request.body;
+        const user = request.user;
         const productId = parseInt(payload.product_id);
 
-        // Fetch latest product data for "After" snapshot
         let stockAfter = payload.stock_after || "0";
         let modalAfter = payload.modal_after || "0";
         let totalValueAfter = payload.total_value_after || "0";
@@ -342,13 +336,11 @@ export const createSupplierDelivery = async (request: FastifyRequest, reply: Fas
             if (fetchedProduct) {
                 stockAfter = fetchedProduct.stok || "0";
                 modalAfter = fetchedProduct.modal || "0";
-                // totalModal in DB or calculated
                 totalValueAfter = fetchedProduct.totalModal || String(parseFloat(stockAfter) * parseFloat(modalAfter));
                 sellingPriceAfter = fetchedProduct.harga || "0";
             }
         }
 
-        // Map snake_case payload to camelCase schema
         const deliveryData = {
             supplierId: parseInt(payload.supplier_id),
             productId: productId,
@@ -357,7 +349,7 @@ export const createSupplierDelivery = async (request: FastifyRequest, reply: Fas
             quantity: parseInt(payload.quantity),
             totalValue: payload.total_value || 0,
             unitCost: payload.unit_cost || (parseInt(payload.quantity) > 0 ? (payload.total_value || 0) / parseInt(payload.quantity) : 0),
-            averageCost: payload.average_cost || modalAfter, // Use fetched modal (which is now WAC) as average cost
+            averageCost: payload.average_cost || modalAfter,
             paymentMethod: payload.payment_method || "CASH",
             topDays: payload.top_days ? parseInt(payload.top_days) : null,
             stockAfter: String(stockAfter),
@@ -374,20 +366,19 @@ export const createSupplierDelivery = async (request: FastifyRequest, reply: Fas
             updatedAt: new Date(),
         });
         return reply.send({ status: "success", message: "Pengiriman berhasil disimpan", data: result });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan pengiriman" });
     }
 };
 
 // Payments
-export const getSupplierPayments = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSupplierPayments = async (request, reply) => {
     try {
-        const { purchaseId } = request.params as any;
-        const user = request.user as any;
+        const { purchaseId } = request.params;
+        const user = request.user;
         const results = await db.select().from(supplierPayments).where(and(eq(supplierPayments.purchaseId, parseInt(purchaseId)), eq(supplierPayments.idToko, user.id_toko)));
 
-        // Map to snake_case
         const data = results.map(p => ({
             id: p.id,
             purchase_id: p.purchaseId,
@@ -401,16 +392,16 @@ export const getSupplierPayments = async (request: FastifyRequest, reply: Fastif
         }));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createSupplierPayment = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createSupplierPayment = async (request, reply) => {
     try {
-        const payload = request.body as any;
-        const user = request.user as any;
+        const payload = request.body;
+        const user = request.user;
 
         const paymentData = {
             purchaseId: parseInt(payload.purchase_id),
@@ -428,7 +419,6 @@ export const createSupplierPayment = async (request: FastifyRequest, reply: Fast
             updatedAt: new Date(),
         });
 
-        // Update purchase status
         const [purchase] = await db.select().from(supplierPurchases).where(eq(supplierPurchases.id, paymentData.purchaseId));
         if (purchase) {
             const currentPaid = parseFloat(purchase.paidAmount?.toString() || "0");
@@ -442,14 +432,14 @@ export const createSupplierPayment = async (request: FastifyRequest, reply: Fast
             await db.update(supplierPurchases)
                 .set({
                     paidAmount: String(newPaid),
-                    status: newStatus as any,
+                    status: newStatus,
                     updatedAt: new Date()
                 })
                 .where(eq(supplierPurchases.id, paymentData.purchaseId));
         }
 
         return reply.send({ status: "success", message: "Pembayaran berhasil disimpan", data: result });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan pembayaran" });
     }

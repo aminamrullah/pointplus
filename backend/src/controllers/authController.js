@@ -1,11 +1,9 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { users } from "../db/schema";
-import { eq, and } from "drizzle-orm";
+import { db } from "../db/index.js";
+import { users } from "../db/schema.js";
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { LoginInput } from "../schemas/authSchema";
 
-export const login = async (request: FastifyRequest<{ Body: LoginInput }>, reply: FastifyReply) => {
+export const login = async (request, reply) => {
     const { username, password } = request.body;
 
     try {
@@ -51,7 +49,7 @@ export const login = async (request: FastifyRequest<{ Body: LoginInput }>, reply
                 package_type: user.packageType,
             },
         });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             success: false,
@@ -63,9 +61,9 @@ export const login = async (request: FastifyRequest<{ Body: LoginInput }>, reply
     }
 };
 
-export const validateToken = async (request: FastifyRequest, reply: FastifyReply) => {
+export const validateToken = async (request, reply) => {
     try {
-        const decoded = await request.jwtVerify<{ id: number }>();
+        const decoded = await request.jwtVerify();
         const [user] = await db.select().from(users).where(eq(users.id, decoded.id)).limit(1);
 
         if (!user) {

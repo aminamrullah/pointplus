@@ -1,14 +1,12 @@
-import { FastifyInstance } from "fastify";
 import {
     getReportPemasukan, getReportPengeluaran, getReportPenjualan,
     getSalesDetail, getBestSeller, getProfitLoss,
     getAccountsPayable, getSummaryStats, downloadFinancialReport, downloadSalesReport
-} from "../controllers/reportController";
-import { getSupplierPurchases } from "../controllers/supplierController";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+} from "../controllers/reportController.js";
+import { getSupplierPurchases } from "../controllers/supplierController.js";
 
-export default async function reportRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export default async function reportRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
 
     typedFastify.get("/pemasukan", getReportPemasukan);
     typedFastify.get("/pengeluaran", getReportPengeluaran);

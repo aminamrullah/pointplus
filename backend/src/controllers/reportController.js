@@ -1,14 +1,12 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { order, orderItems, pemasukan, pengeluaran, supplierPurchases, produk, kategori, biayaLain, kategoriCatatan, users, pelanggan } from "../db/schema";
+import { db } from "../db/index.js";
+import { order, orderItems, pemasukan, pengeluaran, supplierPurchases, produk, kategori, kategoriCatatan, users, pelanggan } from "../db/schema.js";
 import { eq, and, between, sql, desc } from "drizzle-orm";
-// @ts-ignore
 import * as XLSX from "xlsx-js-style";
 
-export const getReportPemasukan = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getReportPemasukan = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
         const conditions = [
             eq(pemasukan.deleted, false),
             eq(pemasukan.idToko, user.id_toko)
@@ -39,16 +37,16 @@ export const getReportPemasukan = async (request: FastifyRequest, reply: Fastify
             .orderBy(desc(pemasukan.tanggal));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getReportPengeluaran = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getReportPengeluaran = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
         const conditions = [
             eq(pengeluaran.deleted, false),
             eq(pengeluaran.idToko, user.id_toko)
@@ -79,18 +77,17 @@ export const getReportPengeluaran = async (request: FastifyRequest, reply: Fasti
             .orderBy(desc(pengeluaran.tanggal));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getReportPenjualan = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getReportPenjualan = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
 
-        // Fetch orders joined with items and products to calculate profit
         const conditions = [
             eq(order.idToko, user.id_toko)
         ];
@@ -106,28 +103,21 @@ export const getReportPenjualan = async (request: FastifyRequest, reply: Fastify
             diskon: order.diskon,
             itemId: orderItems.id,
             quantity: orderItems.quantity,
-            hargaItem: orderItems.harga, // Selling price per item
-            modalItem: produk.modal,     // Cost price per item
+            hargaItem: orderItems.harga,
+            modalItem: produk.modal,
         })
             .from(order)
             .innerJoin(orderItems, eq(order.id, orderItems.idOrder))
             .innerJoin(produk, eq(orderItems.idProduk, produk.id))
             .where(and(...conditions));
 
-        // Group by date
-        const groupedData: Record<string, {
-            id: number;
-            tanggal: string;
-            total_penjualan: number;
-            total_transaksi: Set<number>;
-            keuntungan: number;
-        }> = {};
+        const groupedData = {};
 
         rawData.forEach((row) => {
-            const dateStr = row.tanggal.toISOString().split('T')[0]; // YYYY-MM-DD
+            const dateStr = row.tanggal.toISOString().split('T')[0];
             if (!groupedData[dateStr]) {
                 groupedData[dateStr] = {
-                    id: row.orderId, // Just a key
+                    id: row.orderId,
                     tanggal: row.tanggal.toISOString(),
                     total_penjualan: 0,
                     total_transaksi: new Set(),
@@ -137,19 +127,12 @@ export const getReportPenjualan = async (request: FastifyRequest, reply: Fastify
 
             const group = groupedData[dateStr];
 
-            // Only add order total once per order
             if (!group.total_transaksi.has(row.orderId)) {
                 group.total_penjualan += Number(row.total);
-                // Subtract order discount from profit? 
-                // Profit = (Item Price - Item Cost) * Qty - Order Discount. 
-                // Since we iterate items, we calculate item profit, then assume Order Discount is handled separately or we distribute it.
-                // Simple approach: Gross Profit = Sum((Price - Modal) * Qty) - Order Discount.
-                // We subtract Order Discount ONCE per order.
                 group.keuntungan -= Number(row.diskon);
                 group.total_transaksi.add(row.orderId);
             }
 
-            // Calculate item profit
             const price = Number(row.hargaItem);
             const cost = Number(row.modalItem);
             const qty = row.quantity;
@@ -158,31 +141,28 @@ export const getReportPenjualan = async (request: FastifyRequest, reply: Fastify
             group.keuntungan += itemProfit;
         });
 
-        // Convert format for response
         const reportData = Object.values(groupedData).map(item => ({
-            id: item.id, // using one of the order ids as key
+            id: item.id,
             tanggal: item.tanggal,
             total_penjualan: item.total_penjualan,
             total_transaksi: item.total_transaksi.size,
             keuntungan: item.keuntungan
         }));
 
-        // Sort by date desc
         reportData.sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
 
         return reply.send({ status: "success", data: reportData });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getSalesDetail = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSalesDetail = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
 
-        // Calculate total cost (modal) per order using a subquery structure or join
         const data = await db.select({
             id: order.id,
             tanggal: order.tanggal,
@@ -193,7 +173,7 @@ export const getSalesDetail = async (request: FastifyRequest, reply: FastifyRepl
             diskon: order.diskon,
             ppn: order.ppn,
             total: order.total,
-            margin: sql<number>`SUM((CAST(${orderItems.harga} AS DECIMAL) - CAST(${produk.modal} AS DECIMAL)) * ${orderItems.quantity}) - CAST(${order.diskon} AS DECIMAL)`
+            margin: sql`SUM((CAST(${orderItems.harga} AS DECIMAL) - CAST(${produk.modal} AS DECIMAL)) * ${orderItems.quantity}) - CAST(${order.diskon} AS DECIMAL)`
         })
             .from(order)
             .leftJoin(users, eq(order.idUser, users.id))
@@ -208,17 +188,17 @@ export const getSalesDetail = async (request: FastifyRequest, reply: FastifyRepl
             .orderBy(desc(order.tanggal));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error", error: error.message });
     }
 };
 
-export const getBestSeller = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getBestSeller = async (request, reply) => {
     try {
-        const user = request.user as any;
-        const totalTerjual = sql<number>`SUM(${orderItems.quantity})`;
-        const subtotal = sql<number>`SUM(CAST(${orderItems.hargaTotal} AS DECIMAL))`;
+        const user = request.user;
+        const totalTerjual = sql`SUM(${orderItems.quantity})`;
+        const subtotal = sql`SUM(CAST(${orderItems.hargaTotal} AS DECIMAL))`;
         const data = await db.select({
             id: produk.id,
             barcode: produk.barcode,
@@ -240,7 +220,7 @@ export const getBestSeller = async (request: FastifyRequest, reply: FastifyReply
             .limit(10);
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -250,13 +230,12 @@ export const getBestSeller = async (request: FastifyRequest, reply: FastifyReply
     }
 };
 
-export const getProfitLoss = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getProfitLoss = async (request, reply) => {
     try {
-        // Simple mock for now
-        const user = request.user as any;
-        const totalPenjualan = await db.select({ sum: sql<number>`SUM(${order.total})` }).from(order).where(eq(order.idToko, user.id_toko));
-        const totalPemasukan = await db.select({ sum: sql<number>`SUM(${pemasukan.total})` }).from(pemasukan).where(and(eq(pemasukan.deleted, false), eq(pemasukan.idToko, user.id_toko)));
-        const totalPengeluaran = await db.select({ sum: sql<number>`SUM(${pengeluaran.total})` }).from(pengeluaran).where(and(eq(pengeluaran.deleted, false), eq(pengeluaran.idToko, user.id_toko)));
+        const user = request.user;
+        const totalPenjualan = await db.select({ sum: sql`SUM(${order.total})` }).from(order).where(eq(order.idToko, user.id_toko));
+        const totalPemasukan = await db.select({ sum: sql`SUM(${pemasukan.total})` }).from(pemasukan).where(and(eq(pemasukan.deleted, false), eq(pemasukan.idToko, user.id_toko)));
+        const totalPengeluaran = await db.select({ sum: sql`SUM(${pengeluaran.total})` }).from(pengeluaran).where(and(eq(pengeluaran.deleted, false), eq(pengeluaran.idToko, user.id_toko)));
 
         return reply.send({
             status: "success",
@@ -267,16 +246,16 @@ export const getProfitLoss = async (request: FastifyRequest, reply: FastifyReply
                 net_profit: (Number(totalPenjualan[0]?.sum || 0) + Number(totalPemasukan[0]?.sum || 0)) - Number(totalPengeluaran[0]?.sum || 0)
             }
         });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getAccountsPayable = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getAccountsPayable = async (request, reply) => {
     try {
-        const { supplierId } = request.query as any;
-        const user = request.user as any;
+        const { supplierId } = request.query;
+        const user = request.user;
         const conditions = [
             eq(supplierPurchases.status, "unpaid"),
             eq(supplierPurchases.idToko, user.id_toko),
@@ -291,19 +270,18 @@ export const getAccountsPayable = async (request: FastifyRequest, reply: Fastify
             .from(supplierPurchases)
             .where(and(...conditions));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getSummaryStats = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSummaryStats = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
         const id_toko = user.id_toko;
 
-        // Date filter helpers
         const fromDate = dateFrom ? new Date(dateFrom) : undefined;
         let toDate = dateTo ? new Date(dateTo) : undefined;
 
@@ -311,7 +289,6 @@ export const getSummaryStats = async (request: FastifyRequest, reply: FastifyRep
             toDate.setHours(23, 59, 59, 999);
         }
 
-        // Base conditions
         const orderWhere = and(
             eq(order.idToko, id_toko),
             fromDate && toDate ? between(order.tanggal, fromDate, toDate) : undefined
@@ -329,46 +306,38 @@ export const getSummaryStats = async (request: FastifyRequest, reply: FastifyRep
             fromDate && toDate ? between(pengeluaran.tanggal, fromDate, toDate) : undefined
         );
 
-        // 1. Transaction Stats & Omset
         const [ordersData] = await db.select({
-            totalTransaksi: sql<number>`COUNT(${order.id})`,
-            totalOmset: sql<number>`SUM(${order.total})`,
-            totalDiskon: sql<number>`SUM(${order.diskon})`,
+            totalTransaksi: sql`COUNT(${order.id})`,
+            totalOmset: sql`SUM(${order.total})`,
+            totalDiskon: sql`SUM(${order.diskon})`,
         }).from(order).where(orderWhere);
 
-        // 2. Gross Profit (Laba Kotor)
-        // Laba = (Total Jual Item - Total Modal Item) - Total Diskon Order
-        // Note: orderItems.hargaTotal is essentially the revenue from items
         const itemsData = await db.select({
-            revenueItems: sql<number>`SUM(${orderItems.hargaTotal})`,
-            cogs: sql<number>`SUM(${produk.modal} * ${orderItems.quantity})`
+            revenueItems: sql`SUM(${orderItems.hargaTotal})`,
+            cogs: sql`SUM(${produk.modal} * ${orderItems.quantity})`
         })
             .from(orderItems)
             .innerJoin(order, eq(orderItems.idOrder, order.id))
             .innerJoin(produk, eq(orderItems.idProduk, produk.id))
-            .where(orderWhere); // Reuse order condition
+            .where(orderWhere);
 
         const revenueItems = Number(itemsData[0]?.revenueItems || 0);
         const cogs = Number(itemsData[0]?.cogs || 0);
         const totalDiskon = Number(ordersData?.totalDiskon || 0);
 
-        // Gross Profit Calculation
         const totalLaba = revenueItems - cogs - totalDiskon;
 
-        // 3. Pemasukan (Income)
         const [incomeData] = await db.select({
-            total: sql<number>`SUM(${pemasukan.total})`
+            total: sql`SUM(${pemasukan.total})`
         }).from(pemasukan).where(pemasukanWhere);
 
-        // 4. Pengeluaran (Expense)
         const [expenseData] = await db.select({
-            total: sql<number>`SUM(${pengeluaran.total})`
+            total: sql`SUM(${pengeluaran.total})`
         }).from(pengeluaran).where(pengeluaranWhere);
 
         const totalIncome = Number(incomeData?.total || 0);
         const totalExpense = Number(expenseData?.total || 0);
 
-        // Net Profit = (Gross Profit + Other Income) - Expenses
         const netProfit = totalLaba + totalIncome - totalExpense;
 
         return reply.send({
@@ -384,24 +353,22 @@ export const getSummaryStats = async (request: FastifyRequest, reply: FastifyRep
             }
         });
 
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const downloadFinancialReport = async (request: FastifyRequest, reply: FastifyReply) => {
-    // Placeholder for export
+export const downloadFinancialReport = async (request, reply) => {
     return reply.send({ status: "success", message: "Export functionality not fully implemented yet" });
 };
 
-export const downloadSalesReport = async (request: FastifyRequest, reply: FastifyReply) => {
+export const downloadSalesReport = async (request, reply) => {
     try {
-        const { dateFrom, dateTo } = request.query as any;
-        const user = request.user as any;
+        const { dateFrom, dateTo } = request.query;
+        const user = request.user;
         const id_toko = user.id_toko;
 
-        // Fetch Data: Orders joined with items
         const rawData = await db.select({
             tanggal: order.tanggal,
             kodeOrder: order.kodeOrder,
@@ -410,7 +377,7 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
             kategoriProduk: kategori.namaKategori,
             itemQty: orderItems.quantity,
             diskonProduk: produk.diskon,
-            itemHargaTotal: orderItems.hargaTotal, // Equivalent to sub_total share
+            itemHargaTotal: orderItems.hargaTotal,
             modal: produk.modal,
             orderSubTotal: order.subTotal,
             orderPpn: order.ppn
@@ -427,15 +394,13 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
             )
             .orderBy(desc(order.tanggal));
 
-        // Process Data for Excel
         const excelData = rawData.map(item => {
-            const hargaExcPpn = parseFloat(item.itemHargaTotal as string) || 0;
-            const modal = parseFloat(item.modal as string) || 0;
+            const hargaExcPpn = parseFloat(item.itemHargaTotal) || 0;
+            const modal = parseFloat(item.modal) || 0;
             const qty = item.itemQty;
 
-            // Calculate PPN share for this item based on Order's effective tax rate
-            const orderSub = parseFloat(item.orderSubTotal as string) || 0;
-            const orderTax = parseFloat(item.orderPpn as string) || 0;
+            const orderSub = parseFloat(item.orderSubTotal) || 0;
+            const orderTax = parseFloat(item.orderPpn) || 0;
 
             let taxAmount = 0;
             if (orderSub > 0) {
@@ -444,10 +409,8 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
             }
             const hargaIncPpn = hargaExcPpn + taxAmount;
 
-            // Margin = order_items.harga_total - (produk.modal * order_items.quantity)
             const margin = hargaExcPpn - (modal * qty);
 
-            // Split Diskon
             let diskon1 = "";
             let diskon2 = "";
             const diskonStr = item.diskonProduk ? String(item.diskonProduk) : "";
@@ -474,17 +437,15 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
             };
         });
 
-        // Create WorkSheet
         const ws = XLSX.utils.json_to_sheet(excelData);
 
-        // Customize Header Style
         const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
         for (let C = range.s.c; C <= range.e.c; ++C) {
-            const address = XLSX.utils.encode_col(C) + "1"; // Header row
+            const address = XLSX.utils.encode_col(C) + "1";
             if (!ws[address]) continue;
             ws[address].s = {
                 font: { bold: true, color: { rgb: "FFFFFF" } },
-                fill: { fgColor: { rgb: "4F46E5" } }, // Indigo
+                fill: { fgColor: { rgb: "4F46E5" } },
                 alignment: { horizontal: "center" },
                 border: {
                     top: { style: "thin" },
@@ -495,30 +456,18 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
             };
         }
 
-        // Set Column Widths
         ws["!cols"] = [
-            { wch: 20 }, // Tanggal
-            { wch: 15 }, // No Order
-            { wch: 15 }, // Barcode
-            { wch: 30 }, // Nama
-            { wch: 20 }, // Kategori
-            { wch: 10 }, // Qty
-            { wch: 10 }, // Diskon 1
-            { wch: 10 }, // Diskon 2
-            { wch: 20 }, // Harga Exc
-            { wch: 20 }, // Harga Inc
-            { wch: 20 }  // Margin
+            { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 },
+            { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }, { wch: 20 },
+            { wch: 20 }
         ];
 
-        // Format Date and Number Columns
         for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-            // Date Column (A)
             const dateCell = XLSX.utils.encode_cell({ c: 0, r: R });
             if (ws[dateCell]) {
                 ws[dateCell].z = "dd/mm/yyyy hh:mm";
             }
 
-            // Number Columns (I, J, K) -> Indices 8, 9, 10
             const colsToFormat = [8, 9, 10];
             colsToFormat.forEach(C => {
                 const cell = XLSX.utils.encode_cell({ c: C, r: R });
@@ -535,7 +484,7 @@ export const downloadSalesReport = async (request: FastifyRequest, reply: Fastif
         reply.header("Content-Disposition", `attachment; filename="Laporan_Penjualan_${dateFrom || 'all'}_${dateTo || 'all'}.xlsx"`);
         return reply.send(buffer);
 
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }

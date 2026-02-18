@@ -1,4 +1,3 @@
-import { FastifyInstance } from "fastify";
 import {
     getPelanggan,
     createPelanggan,
@@ -8,11 +7,10 @@ import {
     deleteKategoriPelanggan,
     updatePelanggan,
     updateKategoriPelanggan
-} from "../controllers/pelangganController";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+} from "../controllers/pelangganController.js";
 
-export default async function pelangganRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export default async function pelangganRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
 
     typedFastify.get("/", getPelanggan);
     typedFastify.post("/simpan", createPelanggan);

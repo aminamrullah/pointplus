@@ -1,4 +1,3 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
     getCategories,
     getKasirProducts,
@@ -11,12 +10,11 @@ import {
     getHistory,
     getOrderDetail,
     getSetting
-} from "../controllers/kasirController";
-import { createOrderSchema } from "../schemas/orderSchema";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+} from "../controllers/kasirController.js";
+import { createOrderSchema } from "../schemas/orderSchema.js";
 
-export default async function kasirRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export default async function kasirRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
 
     typedFastify.get("/categories", getCategories);
     typedFastify.get("/products", getKasirProducts);

@@ -1,4 +1,3 @@
-import { FastifyInstance } from "fastify";
 import {
     getUsers,
     createUser,
@@ -7,11 +6,10 @@ import {
     validateEmail,
     getUserPermissions,
     checkPermission
-} from "../controllers/userController";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+} from "../controllers/userController.js";
 
-export default async function userRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export default async function userRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
 
     typedFastify.get("/", getUsers);
     typedFastify.post("/simpan", createUser);

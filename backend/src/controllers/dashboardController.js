@@ -1,12 +1,11 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { order, orderItems, produk, bahanBaku, pemasukan, pengeluaran, pelanggan } from "../db/schema";
-import { eq, and, sql, desc, gte, lte, between } from "drizzle-orm";
-import { subDays, format, startOfDay, endOfDay } from "date-fns";
+import { db } from "../db/index.js";
+import { order, orderItems, produk, pemasukan, pengeluaran, pelanggan } from "../db/schema.js";
+import { eq, and, sql, desc, between } from "drizzle-orm";
+import { subDays, startOfDay, endOfDay } from "date-fns";
 
-export const getDashboardSummary = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { filter = "today", start_date, end_date } = request.query as any;
-    const user = (request as any).user;
+export const getDashboardSummary = async (request, reply) => {
+    const { filter = "today", start_date, end_date } = request.query;
+    const user = request.user;
 
     let startDate = new Date();
     let endDate = new Date();
@@ -35,20 +34,20 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
     try {
         // 1. Total Transactions
         const [transactionCount] = await db
-            .select({ count: sql<number>`count(*)` })
+            .select({ count: sql`count(*)` })
             .from(order)
             .where(and(between(order.tanggal, startDate, endDate), eq(order.idToko, user.id_toko)));
 
         // 2. Revenue
         const [revenueResult] = await db
-            .select({ total: sql<number>`sum(total)` })
+            .select({ total: sql`sum(total)` })
             .from(order)
             .where(and(between(order.tanggal, startDate, endDate), eq(order.idToko, user.id_toko)));
 
         // 3. Profit (Revenue - Modal)
         const profitResult = await db
             .select({
-                profit: sql<number>`sum((cast(${orderItems.harga} as decimal) - cast(${produk.modal} as decimal)) * ${orderItems.quantity})`,
+                profit: sql`sum((cast(${orderItems.harga} as decimal) - cast(${produk.modal} as decimal)) * ${orderItems.quantity})`,
             })
             .from(order)
             .innerJoin(orderItems, eq(order.id, orderItems.idOrder))
@@ -103,7 +102,7 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
         // 6. Total Asset Modal (Total Modal Terjual / HPP)
         const [inventoryValueResult] = await db
             .select({
-                value: sql<number>`sum(cast(${produk.modal} as decimal) * ${orderItems.quantity})`
+                value: sql`sum(cast(${produk.modal} as decimal) * ${orderItems.quantity})`
             })
             .from(order)
             .innerJoin(orderItems, eq(order.id, orderItems.idOrder))
@@ -113,9 +112,9 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
         // 7. Charts Data
         const dailyStats = await db
             .select({
-                date: sql<string>`DATE_FORMAT(${order.tanggal}, '%Y-%m-%d')`,
-                count: sql<number>`count(*)`,
-                revenue: sql<number>`sum(${order.total})`
+                date: sql`DATE_FORMAT(${order.tanggal}, '%Y-%m-%d')`,
+                count: sql`count(*)`,
+                revenue: sql`sum(${order.total})`
             })
             .from(order)
             .where(and(between(order.tanggal, startDate, endDate), eq(order.idToko, user.id_toko)))
@@ -124,8 +123,8 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
 
         const dailyProfit = await db
             .select({
-                date: sql<string>`DATE_FORMAT(${order.tanggal}, '%Y-%m-%d')`,
-                profit: sql<number>`sum((cast(${orderItems.harga} as decimal) - cast(${produk.modal} as decimal)) * ${orderItems.quantity})`
+                date: sql`DATE_FORMAT(${order.tanggal}, '%Y-%m-%d')`,
+                profit: sql`sum((cast(${orderItems.harga} as decimal) - cast(${produk.modal} as decimal)) * ${orderItems.quantity})`
             })
             .from(order)
             .innerJoin(orderItems, eq(order.id, orderItems.idOrder))
@@ -163,7 +162,7 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
                 revenue_chart,
             },
         });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -174,43 +173,42 @@ export const getDashboardSummary = async (request: FastifyRequest, reply: Fastif
     }
 };
 
-export const getOmsetHarian = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getOmsetHarian = async (request, reply) => {
     try {
         const today = new Date();
         const start = startOfDay(today);
         const end = endOfDay(today);
 
-        const user = request.user as any;
+        const user = request.user;
         const [revenueResult] = await db
-            .select({ total: sql<number>`sum(total)` })
+            .select({ total: sql`sum(total)` })
             .from(order)
             .where(and(between(order.tanggal, start, end), eq(order.idToko, user.id_toko)));
 
         return reply.send({ status: "success", data: { total: revenueResult?.total || 0 } });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getAllOrders = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getAllOrders = async (request, reply) => {
     try {
-        // limit 100 recent orders for now
-        const user = request.user as any;
+        const user = request.user;
         const data = await db.select().from(order).where(eq(order.idToko, user.id_toko)).orderBy(desc(order.tanggal)).limit(100);
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const getLowStockProducts = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getLowStockProducts = async (request, reply) => {
     try {
-        const user = request.user as any;
-        const data = await db.select().from(produk).where(and(lte(produk.stok, 5), eq(produk.status, true), eq(produk.idToko, user.id_toko), eq(produk.deleted, false)));
+        const user = request.user;
+        const data = await db.select().from(produk).where(and(sql`CAST(${produk.stok} AS UNSIGNED) <= 5`, eq(produk.status, true), eq(produk.idToko, user.id_toko), eq(produk.deleted, false)));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }

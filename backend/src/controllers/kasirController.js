@@ -1,17 +1,15 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { order, orderItems, produk, kategori, pelanggan, diskon, metodePembayaran, biayaLain, setting } from "../db/schema";
+import { db } from "../db/index.js";
+import { order, orderItems, produk, kategori, pelanggan, diskon, metodePembayaran, biayaLain, setting } from "../db/schema.js";
 import { eq, and, sql, desc, like } from "drizzle-orm";
-import { OrderInput } from "../schemas/orderSchema";
 import { v4 as uuidv4 } from "uuid";
 
-export const getCategories = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getCategories = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const data = await db.select().from(kategori).where(eq(kategori.idToko, id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -22,17 +20,17 @@ export const getCategories = async (request: FastifyRequest, reply: FastifyReply
     }
 };
 
-export const getKasirProducts = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getKasirProducts = async (request, reply) => {
     try {
-        const { category, search, page = "1", perPage = "20" } = request.query as any;
+        const { category, search, page = "1", perPage = "20" } = request.query;
         const p = parseInt(page);
         const pp = parseInt(perPage);
         const offset = (p - 1) * pp;
 
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
 
-        const conditions = [eq(produk.status, true), eq(produk.idToko, id_toko), eq(produk.deleted, false)]; // Added deleted: false filter
+        const conditions = [eq(produk.status, true), eq(produk.idToko, id_toko), eq(produk.deleted, false)];
 
         if (category) {
             conditions.push(eq(produk.kategori, category));
@@ -48,13 +46,13 @@ export const getKasirProducts = async (request: FastifyRequest, reply: FastifyRe
             .offset(offset);
 
         // Format full URL for images
-        const formattedData = data.map((item: any) => ({
+        const formattedData = data.map((item) => ({
             ...item,
             foto: item.foto ? `${process.env.APP_BASE_URL}/uploads/produk/${item.foto}` : null,
         }));
 
         return reply.send({ status: "success", data: formattedData });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -65,9 +63,9 @@ export const getKasirProducts = async (request: FastifyRequest, reply: FastifyRe
     }
 };
 
-export const createOrder = async (request: FastifyRequest<{ Body: OrderInput }>, reply: FastifyReply) => {
+export const createOrder = async (request, reply) => {
     const data = request.body;
-    const user = (request as any).user;
+    const user = request.user;
     const id_toko = user.id_toko;
 
     try {
@@ -82,7 +80,6 @@ export const createOrder = async (request: FastifyRequest<{ Body: OrderInput }>,
                 .limit(1);
 
             if (existingOrder) {
-                // If exists, return the existing order details
                 return reply.status(200).send({
                     status: "success",
                     message: "Order already exists",
@@ -111,14 +108,14 @@ export const createOrder = async (request: FastifyRequest<{ Body: OrderInput }>,
                 ppn: data.tax.toString(),
                 total: data.total.toString(),
                 pembayaran: data.paymentMethod,
-                uangDibayar: (data as any).paidAmount?.toString() || "0",
-                kembalian: (data as any).change?.toString() || "0",
+                uangDibayar: data.paidAmount?.toString() || "0",
+                kembalian: data.change?.toString() || "0",
                 tanggal: new Date(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            } as any);
+            });
 
-            const orderId = (newOrder as any).insertId;
+            const orderId = newOrder.insertId;
 
             // 2. Insert Order Items & Update Stock
             for (const item of data.items) {
@@ -131,7 +128,7 @@ export const createOrder = async (request: FastifyRequest<{ Body: OrderInput }>,
                     hargaTotal: item.total.toString(),
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                } as any);
+                });
 
                 // Update Stock
                 await tx.update(produk)
@@ -156,17 +153,17 @@ export const createOrder = async (request: FastifyRequest<{ Body: OrderInput }>,
     }
 };
 
-export const getTaxesAndFees = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getTaxesAndFees = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const data = await db.select().from(biayaLain).where(eq(biayaLain.idToko, id_toko));
-        const result: Record<string, number> = {};
+        const result = {};
         data.forEach((row) => {
             result[row.type] = row.value;
         });
         return reply.send({ success: true, data: result });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -177,13 +174,13 @@ export const getTaxesAndFees = async (request: FastifyRequest, reply: FastifyRep
     }
 };
 
-export const getCustomers = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getCustomers = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const data = await db.select().from(pelanggan).where(eq(pelanggan.idToko, id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -194,13 +191,13 @@ export const getCustomers = async (request: FastifyRequest, reply: FastifyReply)
     }
 };
 
-export const createCustomer = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createCustomer = async (request, reply) => {
     try {
-        const { nama, hp, kategori_id } = request.body as any;
-        const user = request.user as any;
+        const { nama, hp, kategori_id } = request.body;
+        const user = request.user;
         const id_toko = user.id_toko;
 
-        let kategoriId: number | null = null;
+        let kategoriId = null;
         if (kategori_id) {
             kategoriId = parseInt(kategori_id);
         }
@@ -212,12 +209,12 @@ export const createCustomer = async (request: FastifyRequest, reply: FastifyRepl
             kategoriId,
             createdAt: new Date(),
             updatedAt: new Date()
-        } as any);
+        });
 
-        const [newCustomer] = await db.select().from(pelanggan).where(eq(pelanggan.id, (result as any).insertId));
+        const [newCustomer] = await db.select().from(pelanggan).where(eq(pelanggan.id, result.insertId));
         return reply.send({ status: "success", data: newCustomer });
 
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -227,13 +224,13 @@ export const createCustomer = async (request: FastifyRequest, reply: FastifyRepl
     }
 };
 
-export const getDiscounts = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getDiscounts = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const data = await db.select().from(diskon).where(eq(diskon.idToko, id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -244,9 +241,9 @@ export const getDiscounts = async (request: FastifyRequest, reply: FastifyReply)
     }
 };
 
-export const getPaymentMethods = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getPaymentMethods = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const data = await db.select()
             .from(metodePembayaran)
@@ -258,14 +255,14 @@ export const getPaymentMethods = async (request: FastifyRequest, reply: FastifyR
                 )
             );
 
-        const formattedData = data.map((item: any) => ({
+        const formattedData = data.map((item) => ({
             ...item,
             nama_metode: item.namaMetode,
             gambar: item.gambar ? `${process.env.APP_BASE_URL}/uploads/payment/${item.gambar}` : null,
         }));
 
         return reply.send({ status: "success", data: formattedData });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -276,11 +273,11 @@ export const getPaymentMethods = async (request: FastifyRequest, reply: FastifyR
     }
 };
 
-export const getHistory = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getHistory = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
-        const { limit = "50" } = request.query as any;
+        const { limit = "50" } = request.query;
 
         const data = await db.select({
             id: order.id,
@@ -299,7 +296,7 @@ export const getHistory = async (request: FastifyRequest, reply: FastifyReply) =
             .limit(parseInt(limit));
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -310,12 +307,12 @@ export const getHistory = async (request: FastifyRequest, reply: FastifyReply) =
     }
 };
 
-export const getOrderDetail = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { orderId } = request.query as any;
+export const getOrderDetail = async (request, reply) => {
+    const { orderId } = request.query;
     if (!orderId) return reply.status(400).send({ status: "error", message: "Order ID missing" });
 
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
 
         const [orderInfo] = await db.select({
@@ -361,7 +358,7 @@ export const getOrderDetail = async (request: FastifyRequest, reply: FastifyRepl
                 items,
             },
         });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",
@@ -372,13 +369,13 @@ export const getOrderDetail = async (request: FastifyRequest, reply: FastifyRepl
     }
 };
 
-export const getSetting = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSetting = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const id_toko = user.id_toko;
         const [data] = await db.select().from(setting).where(eq(setting.idToko, id_toko)).limit(1);
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({
             status: "error",

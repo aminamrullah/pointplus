@@ -1,6 +1,4 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-
-export const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
+export const authenticate = async (request, reply) => {
     try {
         await request.jwtVerify();
     } catch (err) {

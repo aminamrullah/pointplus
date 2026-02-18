@@ -1,8 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { fileURLToPath } from 'url';
 
-export const processImageField = (imageInput: string | null | undefined, folder: string = "setting"): string | null => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const processImageField = (imageInput, folder = "setting") => {
     if (!imageInput) return null;
 
     // Base64 handling

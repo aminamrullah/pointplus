@@ -1,4 +1,3 @@
-import { FastifyInstance } from "fastify";
 import {
     getSetting, saveSetting,
     getPembayaran, createPembayaran, updatePembayaran, deletePembayaran, updatePembayaranStatus,
@@ -6,17 +5,16 @@ import {
     getBiaya, saveBiaya,
     getDiskon, createDiskon, updateDiskon, deleteDiskon,
     getStoreInfo
-} from "../controllers/settingController";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+} from "../controllers/settingController.js";
 
-export async function commonSettingRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function commonSettingRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getSetting);
     typedFastify.post("/simpan", saveSetting);
 }
 
-export async function pembayaranRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function pembayaranRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getPembayaran);
     typedFastify.post("/simpan", createPembayaran);
     typedFastify.put("/update/:id", updatePembayaran);
@@ -24,27 +22,27 @@ export async function pembayaranRoutes(fastify: FastifyInstance) {
     typedFastify.post("/update-status", updatePembayaranStatus);
 }
 
-export async function rewardRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function rewardRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getReward);
     typedFastify.post("/simpan", saveReward);
 }
 
-export async function biayaRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function biayaRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getBiaya);
     typedFastify.post("/simpan", saveBiaya);
 }
 
-export async function diskonRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function diskonRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getDiskon);
     typedFastify.post("/simpan", createDiskon);
     typedFastify.put("/update/:id", updateDiskon);
     typedFastify.delete("/delete/:id", deleteDiskon);
 }
 
-export async function storeInfoRoutes(fastify: FastifyInstance) {
-    const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
+export async function storeInfoRoutes(fastify) {
+    const typedFastify = fastify.withTypeProvider();
     typedFastify.get("/", getStoreInfo);
 }

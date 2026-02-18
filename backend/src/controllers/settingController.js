@@ -1,17 +1,19 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../db";
-import { setting, metodePembayaran, reward, biayaLain, diskon, storePp } from "../db/schema";
+import { db } from "../db/index.js";
+import { setting, metodePembayaran, reward, biayaLain, diskon, storePp } from "../db/schema.js";
 import { eq, and } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from "uuid";
 
-const processImageField = (imageInput: string | null | undefined, folder: string = "setting"): string | null => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const processImageField = (imageInput, folder = "setting") => {
     if (!imageInput) return null;
 
     // Base64 handling
     if (imageInput.startsWith("data:image")) {
-        // Updated regex to support more mime types (e.g. svg+xml)
         const matches = imageInput.match(/^data:image\/([\w+.-]+);base64,(.+)$/);
         if (matches) {
             const extension = matches[1] === "jpeg" ? "jpg" : matches[1].replace('+xml', '');
@@ -25,7 +27,6 @@ const processImageField = (imageInput: string | null | undefined, folder: string
                 }
 
                 fs.writeFileSync(path.join(uploadDir, fileName), buffer);
-                console.log(`[processImageField] Saved image: ${fileName} to ${folder}`);
                 return fileName;
             } catch (error) {
                 console.error(`[processImageField] Error saving image to ${folder}:`, error);
@@ -40,32 +41,20 @@ const processImageField = (imageInput: string | null | undefined, folder: string
     // Existing URL handling
     if (imageInput.startsWith("http")) {
         const parts = imageInput.split("/");
-        return parts[parts.length - 1]; // Return just the filename
+        return parts[parts.length - 1];
     }
 
-    // If it's just a filename (no path, no data: prefix)
+    // If it's just a filename
     if (!imageInput.includes("/")) {
         return imageInput;
     }
 
-    return null; // Return null for unrecognized formats to avoid saving garbage
+    return null;
 };
 
-interface Pembayaran {
-    id: number;
-    idToko: number;
-    namaMetode: string;
-    tipe: "cash" | "wallet" | "transfer";
-    gambar: string | null;
-    status: boolean | null;
-    deleted: boolean | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-}
-
-export const getSetting = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getSetting = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const [data] = await db.select().from(setting).where(eq(setting.idToko, user.id_toko)).limit(1);
 
         if (data && data.foto) {
@@ -73,16 +62,16 @@ export const getSetting = async (request: FastifyRequest, reply: FastifyReply) =
         }
 
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const saveSetting = async (request: FastifyRequest, reply: FastifyReply) => {
+export const saveSetting = async (request, reply) => {
     try {
-        const data = request.body as any;
-        const user = request.user as any;
+        const data = request.body;
+        const user = request.user;
         const [existing] = await db.select().from(setting).where(eq(setting.idToko, user.id_toko)).limit(1);
 
         // Handle photo saving
@@ -99,35 +88,35 @@ export const saveSetting = async (request: FastifyRequest, reply: FastifyReply) 
             await db.insert(setting).values({ ...data, idToko: user.id_toko, createdAt: new Date(), updatedAt: new Date() });
         }
         return reply.send({ status: "success", message: "Setting berhasil disimpan" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan setting" });
     }
 };
 
 // Metode Pembayaran
-export const getPembayaran = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getPembayaran = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const data = await db.select().from(metodePembayaran).where(and(eq(metodePembayaran.deleted, false), eq(metodePembayaran.idToko, user.id_toko)));
 
-        const formattedData = data.map((item: any) => ({
+        const formattedData = data.map((item) => ({
             ...item,
             nama_metode: item.namaMetode,
             gambar: item.gambar && item.gambar.includes('http') ? item.gambar : (item.gambar ? `${process.env.APP_BASE_URL}/uploads/payment/${item.gambar}` : null)
         }));
 
         return reply.send({ status: "success", data: formattedData });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createPembayaran = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createPembayaran = async (request, reply) => {
     try {
-        const data = request.body as any;
-        const user = request.user as any;
+        const data = request.body;
+        const user = request.user;
 
         // Handle photo saving
         if (data.gambar) {
@@ -137,15 +126,7 @@ export const createPembayaran = async (request: FastifyRequest, reply: FastifyRe
             }
         }
 
-        // Map frontend snake_case to potential schema camelCase if needed, 
-        // or ensure naming consistency. 
-        // Assuming schema matches or we map it here.
-        // Safer way: explicitly map known fields if schema differs, but let's assume spread works for now 
-        // OR better yet, let's fix the variable mapping if schema check confirms it.
-        // For now, let's implement the image fix.
-
-        // Helper to map snake_case to camelCase
-        const payload: any = {
+        const payload = {
             ...data,
             namaMetode: data.nama_metode || data.namaMetode,
             idToko: user.id_toko,
@@ -155,17 +136,17 @@ export const createPembayaran = async (request: FastifyRequest, reply: FastifyRe
 
         await db.insert(metodePembayaran).values(payload);
         return reply.send({ status: "success", message: "Metode pembayaran berhasil disimpan" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan metode pembayaran" });
     }
 };
 
-export const updatePembayaran = async (request: FastifyRequest, reply: FastifyReply) => {
+export const updatePembayaran = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const data = request.body as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const data = request.body;
+        const user = request.user;
 
         // Handle photo saving
         if (data.gambar) {
@@ -175,8 +156,7 @@ export const updatePembayaran = async (request: FastifyRequest, reply: FastifyRe
             }
         }
 
-        // Helper to map snake_case to camelCase
-        const payload: any = {
+        const payload = {
             ...data,
             namaMetode: data.nama_metode || data.namaMetode,
             updatedAt: new Date(),
@@ -186,81 +166,81 @@ export const updatePembayaran = async (request: FastifyRequest, reply: FastifyRe
 
         await db.update(metodePembayaran).set(payload).where(and(eq(metodePembayaran.id, parseInt(id)), eq(metodePembayaran.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Metode pembayaran berhasil diperbarui" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal memperbarui metode pembayaran" });
     }
 };
 
-export const deletePembayaran = async (request: FastifyRequest, reply: FastifyReply) => {
+export const deletePembayaran = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const user = request.user;
         await db.update(metodePembayaran).set({ deleted: true, updatedAt: new Date() }).where(and(eq(metodePembayaran.id, parseInt(id)), eq(metodePembayaran.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Metode pembayaran berhasil dihapus" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menghapus metode pembayaran" });
     }
 };
 
-export const updatePembayaranStatus = async (request: FastifyRequest, reply: FastifyReply) => {
+export const updatePembayaranStatus = async (request, reply) => {
     try {
-        const { id, isAvailable } = request.body as any;
-        const user = request.user as any;
+        const { id, isAvailable } = request.body;
+        const user = request.user;
         await db.update(metodePembayaran).set({ status: !!isAvailable, updatedAt: new Date() }).where(and(eq(metodePembayaran.id, parseInt(id)), eq(metodePembayaran.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Status metode pembayaran berhasil diperbarui" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal memperbarui status" });
     }
 };
 
 // Reward
-export const getReward = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getReward = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const data = await db.select().from(reward).where(eq(reward.idToko, user.id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const saveReward = async (request: FastifyRequest, reply: FastifyReply) => {
+export const saveReward = async (request, reply) => {
     try {
-        const { id, jumlah } = request.body as any;
-        const user = request.user as any;
+        const { id, jumlah } = request.body;
+        const user = request.user;
         if (id) {
             await db.update(reward).set({ jumlah, updatedAt: new Date() }).where(and(eq(reward.id, parseInt(id)), eq(reward.idToko, user.id_toko)));
         } else {
             await db.insert(reward).values({ jumlah, idToko: user.id_toko, createdAt: new Date(), updatedAt: new Date() });
         }
         return reply.send({ status: "success", message: "Reward berhasil disimpan" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan reward" });
     }
 };
 
 // Biaya
-export const getBiaya = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getBiaya = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const data = await db.select().from(biayaLain).where(eq(biayaLain.idToko, user.id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
 
-export const saveBiaya = async (request: FastifyRequest, reply: FastifyReply) => {
+export const saveBiaya = async (request, reply) => {
     try {
-        const data = request.body as any;
-        const user = request.user as any;
+        const data = request.body;
+        const user = request.user;
         const { ppn_jumlah, biaya_jumlah } = data;
 
         // Process PPN
@@ -311,33 +291,29 @@ export const saveBiaya = async (request: FastifyRequest, reply: FastifyReply) =>
             }
         }
 
-        // Clean up duplicates if any (Self-healing)
-        // Ensure only one of each type exists per store
-        // This is a safety measure against previous bugs
+        // Clean up duplicates
         const allBiaya = await db.select().from(biayaLain).where(eq(biayaLain.idToko, user.id_toko));
         const ppnEntries = allBiaya.filter(b => b.type === "ppn");
         const serviceEntries = allBiaya.filter(b => b.type === "biaya_layanan");
 
         if (ppnEntries.length > 1) {
-            // Keep the latest updated one, delete others
-            ppnEntries.sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-            const [keep, ...remove] = ppnEntries;
+            ppnEntries.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+            const [, ...remove] = ppnEntries;
             for (const item of remove) {
                 await db.delete(biayaLain).where(eq(biayaLain.id, item.id));
             }
         }
 
         if (serviceEntries.length > 1) {
-            // Keep the latest updated one, delete others
-            serviceEntries.sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-            const [keep, ...remove] = serviceEntries;
+            serviceEntries.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+            const [, ...remove] = serviceEntries;
             for (const item of remove) {
                 await db.delete(biayaLain).where(eq(biayaLain.id, item.id));
             }
         }
 
         return reply.send({ status: "success", message: "Biaya berhasil disimpan" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan biaya" });
     }
@@ -345,60 +321,60 @@ export const saveBiaya = async (request: FastifyRequest, reply: FastifyReply) =>
 
 
 // Diskon
-export const getDiskon = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getDiskon = async (request, reply) => {
     try {
-        const user = request.user as any;
+        const user = request.user;
         const data = await db.select().from(diskon).where(eq(diskon.idToko, user.id_toko));
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
 
-export const createDiskon = async (request: FastifyRequest, reply: FastifyReply) => {
+export const createDiskon = async (request, reply) => {
     try {
-        const data = request.body as any;
-        const user = request.user as any;
+        const data = request.body;
+        const user = request.user;
         await db.insert(diskon).values({ ...data, idToko: user.id_toko, createdAt: new Date(), updatedAt: new Date() });
         return reply.send({ status: "success", message: "Diskon berhasil disimpan" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menyimpan diskon" });
     }
 };
 
-export const updateDiskon = async (request: FastifyRequest, reply: FastifyReply) => {
+export const updateDiskon = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const data = request.body as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const data = request.body;
+        const user = request.user;
         await db.update(diskon).set({ ...data, updatedAt: new Date() }).where(and(eq(diskon.id, parseInt(id)), eq(diskon.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Diskon berhasil diperbarui" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal memperbarui diskon" });
     }
 };
 
-export const deleteDiskon = async (request: FastifyRequest, reply: FastifyReply) => {
+export const deleteDiskon = async (request, reply) => {
     try {
-        const { id } = request.params as any;
-        const user = request.user as any;
+        const { id } = request.params;
+        const user = request.user;
         await db.delete(diskon).where(and(eq(diskon.id, parseInt(id)), eq(diskon.idToko, user.id_toko)));
         return reply.send({ status: "success", message: "Diskon berhasil dihapus" });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Gagal menghapus diskon" });
     }
 };
 
 // Store Info (toko_pp)
-export const getStoreInfo = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getStoreInfo = async (request, reply) => {
     try {
         const [data] = await db.select().from(storePp).limit(1);
         return reply.send({ status: "success", data });
-    } catch (error: any) {
+    } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }

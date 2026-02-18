@@ -1,11 +1,13 @@
 {
   "name": "pointplus-backend",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npx tsc"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:push": "drizzle-kit push"
   },
   "keywords": [],
   "author": "",
@@ -31,13 +33,6 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.2.0",
-    "@types/uuid": "^10.0.0",
-    "drizzle-kit": "^0.31.8",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "drizzle-kit": "^0.31.8"
   }
 }
