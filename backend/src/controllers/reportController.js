@@ -1,7 +1,7 @@
 import { db } from "../db/index.js";
 import { order, orderItems, pemasukan, pengeluaran, supplierPurchases, produk, kategori, kategoriCatatan, users, pelanggan } from "../db/schema.js";
 import { eq, and, between, sql, desc } from "drizzle-orm";
-import * as XLSX from "xlsx-js-style";
+import XLSX from "xlsx-js-style";
 
 export const getReportPemasukan = async (request, reply) => {
     try {
