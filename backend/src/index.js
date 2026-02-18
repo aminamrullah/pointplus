@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -9,7 +12,6 @@ import {
     validatorCompiler,
     jsonSchemaTransform,
 } from "fastify-type-provider-zod";
-import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import kasirRoutes from "./routes/kasirRoutes.js";
@@ -50,8 +52,6 @@ import { authenticate } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-dotenv.config();
 
 const fastify = Fastify({
     logger: true,
@@ -212,10 +212,11 @@ fastify.get("/health", async () => {
 const start = async () => {
     try {
         const port = parseInt(process.env.PORT || "5000");
+        const baseUrl = process.env.APP_BASE_URL || `http://localhost:${port}`;
+
         await fastify.listen({ port, host: "0.0.0.0" });
-        console.log(
-            `🚀 Server advanced, cepat dan aman running at http://localhost:${port}`,
-        );
+        console.log(`🚀 Server running at ${baseUrl}`);
+        console.log(`📡 API Base URL set to: ${process.env.APP_BASE_URL}`);
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);

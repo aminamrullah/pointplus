@@ -98,7 +98,7 @@ export const getProducts = async (
             return {
                 ...item,
                 foto: item.foto
-                    ? `${process.env.APP_BASE_URL}/uploads/produk/${item.foto}`
+                    ? `${process.env.APP_BASE_URL || ""}/uploads/produk/${item.foto}`
                     : null,
                 status: item.status ? 1 : 0,
                 // Override harga and modal with display values

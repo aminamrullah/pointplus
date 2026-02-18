@@ -58,7 +58,7 @@ export const getSetting = async (request, reply) => {
         const [data] = await db.select().from(setting).where(eq(setting.idToko, user.id_toko)).limit(1);
 
         if (data && data.foto) {
-            data.foto = `${process.env.APP_BASE_URL}/uploads/setting/${data.foto}`;
+            data.foto = `${(process.env.APP_BASE_URL || "").replace(/\/$/, "")}/uploads/setting/${data.foto}`;
         }
 
         return reply.send({ status: "success", data });
@@ -103,7 +103,7 @@ export const getPembayaran = async (request, reply) => {
         const formattedData = data.map((item) => ({
             ...item,
             nama_metode: item.namaMetode,
-            gambar: item.gambar && item.gambar.includes('http') ? item.gambar : (item.gambar ? `${process.env.APP_BASE_URL}/uploads/payment/${item.gambar}` : null)
+            gambar: item.gambar && item.gambar.includes('http') ? item.gambar : (item.gambar ? `${(process.env.APP_BASE_URL || "").replace(/\/$/, "")}/uploads/payment/${item.gambar}` : null)
         }));
 
         return reply.send({ status: "success", data: formattedData });
