@@ -5,8 +5,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from "uuid";
-import X from "xlsx-js-style";
-const XLSX = X.default || X;
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const XLSX = require("xlsx-js-style");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
