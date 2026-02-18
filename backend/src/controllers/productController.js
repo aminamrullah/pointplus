@@ -5,7 +5,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from "uuid";
-import XLSX from "xlsx-js-style";
+import X from "xlsx-js-style";
+const XLSX = X.default || X;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -481,22 +482,21 @@ export const exportCalculator = async (
             Diskon: item.diskon ? Number(Number(item.diskon).toFixed(2)) : 0,
         }));
 
-        const X = XLSX.default || XLSX;
-        const ws = X.utils.json_to_sheet(excelData);
-        const range = X.utils.decode_range(ws["!ref"] || "A1");
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
         for (let R = range.s.r + 1; R <= range.e.r; ++R) {
             const rowNum = R + 1;
-            const cellJ = X.utils.encode_cell({ c: 9, r: R });
+            const cellJ = XLSX.utils.encode_cell({ c: 9, r: R });
             if (ws[cellJ]) {
                 ws[cellJ].f = `ROUND(H${rowNum}*(1+I${rowNum}/100), 2)`;
                 ws[cellJ].s = { fill: { fgColor: { rgb: "FFFFCC" } } };
             }
-            const cellK = X.utils.encode_cell({ c: 10, r: R });
+            const cellK = XLSX.utils.encode_cell({ c: 10, r: R });
             if (ws[cellK]) {
                 ws[cellK].f = `J${rowNum}-M${rowNum}`;
                 ws[cellK].s = { fill: { fgColor: { rgb: "FFFFCC" } } };
             }
-            const cellL = X.utils.encode_cell({ c: 11, r: R });
+            const cellL = XLSX.utils.encode_cell({ c: 11, r: R });
             if (ws[cellL]) {
                 ws[cellL].f = `K${rowNum}-H${rowNum}`;
                 ws[cellL].s = { fill: { fgColor: { rgb: "FFFFCC" } } };
@@ -512,7 +512,7 @@ export const exportCalculator = async (
             ["5. Sistem akan membaca Barcode Pabrik/Toko untuk update, atau Nama jika tidak ada barcode."],
         ];
 
-        X.utils.sheet_add_aoa(ws, instructions, { origin: "O2" });
+        XLSX.utils.sheet_add_aoa(ws, instructions, { origin: "O2" });
 
         const wscols = [
             { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
@@ -521,9 +521,9 @@ export const exportCalculator = async (
         ];
         ws["!cols"] = wscols;
 
-        const wb = X.utils.book_new();
-        X.utils.book_append_sheet(wb, ws, "Kalkulator Produk");
-        const excelBuffer = X.write(wb, { type: "buffer", bookType: "xlsx" });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Kalkulator Produk");
+        const excelBuffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 
         reply.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         reply.header("Content-Disposition", `attachment; filename="kalkulator_produk_${new Date().toISOString().split("T")[0]}.xlsx"`);
@@ -551,10 +551,9 @@ export const importCalculator = async (
         if (!data) return reply.status(400).send({ status: "error", message: "File tidak ditemukan" });
 
         const buffer = await data.toBuffer();
-        const X = XLSX.default || XLSX;
-        const workbook = X.read(buffer, { type: "buffer" });
+        const workbook = XLSX.read(buffer, { type: "buffer" });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = X.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
         if (!jsonData || jsonData.length === 0) return reply.status(400).send({ status: "error", message: "File kosong atau format tidak valid" });
 
