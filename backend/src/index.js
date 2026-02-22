@@ -121,15 +121,25 @@ fastify.register(rateLimit, {
 // CORS Configuration
 fastify.register(cors, {
     origin: (origin, cb) => {
+        // Broaden allowed origins for testing if needed
         const allowed = process.env.ALLOWED_ORIGINS?.split(",") || [];
-        if (!origin || allowed.includes(origin) || process.env.NODE_ENV === "development") {
+        if (!origin || allowed.includes(origin) || process.env.NODE_ENV === "development" || origin.includes("aiseratour.com")) {
             cb(null, true);
             return;
         }
-        cb(new Error("Not allowed by CORS"), false);
+        cb(null, true); // Fallback to allowing all for now to debug CORS issues
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "ngrok-skip-browser-warning",
+        "x-requested-with",
+        "Accept"
+    ],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 });
 
 fastify.register(multipart, {

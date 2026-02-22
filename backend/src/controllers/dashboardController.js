@@ -206,12 +206,14 @@ export const getAllOrders = async (request, reply) => {
 export const getLowStockProducts = async (request, reply) => {
     try {
         const user = request.user;
+        console.log(`[Dashboard] Fetching low stock for store ${user.id_toko}`);
+
         const products = await db
             .select({
                 id: produk.id,
                 nama: produk.nama,
                 kode_produk: produk.kodeProduk,
-                kategori_raw: produk.kategori,
+                kategori_id: produk.kategori,
                 nama_kategori: kategori.namaKategori,
                 modal: produk.modal,
                 harga: produk.harga,
@@ -227,11 +229,13 @@ export const getLowStockProducts = async (request, reply) => {
                 eq(produk.deleted, false)
             ));
 
+        console.log(`[Dashboard] Found ${products.length} low stock items`);
+
         const data = products.map(p => ({
             id: p.id,
-            name: p.nama,
+            name: p.nama || "Tanpa Nama",
             sku: p.kode_produk || "-",
-            category: p.nama_kategori || p.kategori_raw || "-",
+            category: p.nama_kategori || p.kategori_id || "-",
             beli: p.modal || "0",
             jual: p.harga || "0",
             stock: p.stok || "0",
@@ -248,12 +252,14 @@ export const getLowStockProducts = async (request, reply) => {
 export const getOutOfStockProducts = async (request, reply) => {
     try {
         const user = request.user;
+        console.log(`[Dashboard] Fetching out of stock for store ${user.id_toko}`);
+
         const products = await db
             .select({
                 id: produk.id,
                 nama: produk.nama,
                 kode_produk: produk.kodeProduk,
-                kategori_raw: produk.kategori,
+                kategori_id: produk.kategori,
                 nama_kategori: kategori.namaKategori,
                 modal: produk.modal,
                 harga: produk.harga,
@@ -268,11 +274,13 @@ export const getOutOfStockProducts = async (request, reply) => {
                 eq(produk.deleted, false)
             ));
 
+        console.log(`[Dashboard] Found ${products.length} out of stock items`);
+
         const data = products.map(p => ({
             id: p.id,
-            name: p.nama,
+            name: p.nama || "Tanpa Nama",
             sku: p.kode_produk || "-",
-            category: p.nama_kategori || p.kategori_raw || "-",
+            category: p.nama_kategori || p.kategori_id || "-",
             beli: p.modal || "0",
             jual: p.harga || "0",
             stock: p.stok || "0"
@@ -284,6 +292,7 @@ export const getOutOfStockProducts = async (request, reply) => {
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
+
 
 
 
