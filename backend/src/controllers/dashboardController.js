@@ -1,5 +1,5 @@
 import { db } from "../db/index.js";
-import { order, orderItems, produk, pemasukan, pengeluaran, pelanggan } from "../db/schema.js";
+import { order, orderItems, produk, kategori, pemasukan, pengeluaran, pelanggan } from "../db/schema.js";
 import { eq, and, sql, desc, between } from "drizzle-orm";
 import { subDays, startOfDay, endOfDay } from "date-fns";
 
@@ -236,12 +236,13 @@ export const getLowStockProducts = async (request, reply) => {
             name: p.nama || "Tanpa Nama",
             sku: p.kode_produk || "-",
             category: p.nama_kategori || p.kategori_id || "-",
-            beli: p.modal || "0",
-            jual: p.harga || "0",
-            stock: p.stok || "0",
+            beli: Number(p.modal || 0),
+            jual: Number(p.harga || 0),
+            stock: Number(p.stok || 0),
             minStock: 7
         }));
 
+        console.log(`[Dashboard] Sending ${data.length} items to frontend. First item:`, data[0]);
         return reply.send({ status: "success", data });
     } catch (error) {
         request.log.error(error);
@@ -281,9 +282,9 @@ export const getOutOfStockProducts = async (request, reply) => {
             name: p.nama || "Tanpa Nama",
             sku: p.kode_produk || "-",
             category: p.nama_kategori || p.kategori_id || "-",
-            beli: p.modal || "0",
-            jual: p.harga || "0",
-            stock: p.stok || "0"
+            beli: Number(p.modal || 0),
+            jual: Number(p.harga || 0),
+            stock: Number(p.stok || 0)
         }));
 
         return reply.send({ status: "success", data });
