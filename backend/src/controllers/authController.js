@@ -1,5 +1,5 @@
 import { db } from "../db/index.js";
-import { users } from "../db/schema.js";
+import { users, storePp } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
@@ -46,7 +46,7 @@ export const login = async (request, reply) => {
                 role: user.role,
                 hp: user.hp,
                 is_premium: user.isPremium,
-                package_type: user.packageType,
+                package_type: await getPackageType(user.idToko),
             },
         });
     } catch (error) {
@@ -81,7 +81,7 @@ export const validateToken = async (request, reply) => {
                 role: user.role,
                 hp: user.hp,
                 is_premium: user.isPremium,
-                package_type: user.packageType,
+                package_type: await getPackageType(user.idToko),
             },
         });
     } catch (error) {
@@ -89,5 +89,14 @@ export const validateToken = async (request, reply) => {
             status: "error",
             message: "Token tidak valid",
         });
+    }
+};
+
+const getPackageType = async (idToko) => {
+    try {
+        const [store] = await db.select().from(storePp).where(eq(storePp.id, idToko)).limit(1);
+        return store?.packageType || 'free';
+    } catch (e) {
+        return 'free';
     }
 };

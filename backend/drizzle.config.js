@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
-  schema: "./src/db/schema.ts",
+  schema: "./src/db/schema.js",
   out: "./src/db/drizzle",
   dialect: "mysql",
   dbCredentials: {

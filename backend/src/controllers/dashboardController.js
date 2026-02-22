@@ -206,10 +206,84 @@ export const getAllOrders = async (request, reply) => {
 export const getLowStockProducts = async (request, reply) => {
     try {
         const user = request.user;
-        const data = await db.select().from(produk).where(and(sql`CAST(${produk.stok} AS UNSIGNED) <= 5`, eq(produk.status, true), eq(produk.idToko, user.id_toko), eq(produk.deleted, false)));
+        const products = await db
+            .select({
+                id: produk.id,
+                nama: produk.nama,
+                kode_produk: produk.kodeProduk,
+                kategori_raw: produk.kategori,
+                nama_kategori: kategori.namaKategori,
+                modal: produk.modal,
+                harga: produk.harga,
+                stok: produk.stok,
+            })
+            .from(produk)
+            .leftJoin(kategori, eq(sql`CAST(${produk.kategori} AS UNSIGNED)`, kategori.id))
+            .where(and(
+                sql`CAST(${produk.stok} AS UNSIGNED) <= 7`,
+                sql`CAST(${produk.stok} AS UNSIGNED) >= 1`,
+                eq(produk.status, true),
+                eq(produk.idToko, user.id_toko),
+                eq(produk.deleted, false)
+            ));
+
+        const data = products.map(p => ({
+            id: p.id,
+            name: p.nama,
+            sku: p.kode_produk || "-",
+            category: p.nama_kategori || p.kategori_raw || "-",
+            beli: p.modal || "0",
+            jual: p.harga || "0",
+            stock: p.stok || "0",
+            minStock: 7
+        }));
+
         return reply.send({ status: "success", data });
     } catch (error) {
         request.log.error(error);
         return reply.status(500).send({ status: "error", message: "Internal server error" });
     }
 };
+
+export const getOutOfStockProducts = async (request, reply) => {
+    try {
+        const user = request.user;
+        const products = await db
+            .select({
+                id: produk.id,
+                nama: produk.nama,
+                kode_produk: produk.kodeProduk,
+                kategori_raw: produk.kategori,
+                nama_kategori: kategori.namaKategori,
+                modal: produk.modal,
+                harga: produk.harga,
+                stok: produk.stok,
+            })
+            .from(produk)
+            .leftJoin(kategori, eq(sql`CAST(${produk.kategori} AS UNSIGNED)`, kategori.id))
+            .where(and(
+                sql`CAST(${produk.stok} AS UNSIGNED) <= 0`,
+                eq(produk.status, true),
+                eq(produk.idToko, user.id_toko),
+                eq(produk.deleted, false)
+            ));
+
+        const data = products.map(p => ({
+            id: p.id,
+            name: p.nama,
+            sku: p.kode_produk || "-",
+            category: p.nama_kategori || p.kategori_raw || "-",
+            beli: p.modal || "0",
+            jual: p.harga || "0",
+            stock: p.stok || "0"
+        }));
+
+        return reply.send({ status: "success", data });
+    } catch (error) {
+        request.log.error(error);
+        return reply.status(500).send({ status: "error", message: "Internal server error" });
+    }
+};
+
+
+

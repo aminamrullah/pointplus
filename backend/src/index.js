@@ -45,6 +45,7 @@ import {
     storeInfoRoutes,
 } from "./routes/settingRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import featureRoutes from "./routes/featureRoutes.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 import fastifyStatic from "@fastify/static";
@@ -200,6 +201,7 @@ fastify.register(
         api.register(diskonRoutes, { prefix: "/diskon" });
         api.register(storeInfoRoutes, { prefix: "/toko_pp" });
         api.register(reportRoutes, { prefix: "/reports" });
+        api.register(featureRoutes, { prefix: "/" });
     },
     { prefix: "/api" },
 );

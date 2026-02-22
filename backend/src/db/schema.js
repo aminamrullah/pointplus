@@ -10,7 +10,7 @@ export const users = mysqlTable("users", {
     namaLengkap: varchar("nama_lengkap", { length: 100 }).notNull(),
     isPremium: double("is_premium").notNull().default(0),
     roleId: int("role_id"),
-    packageType: mysqlEnum("package_type", ["free", "premium", "super"]).notNull().default("free"),
+    packageType: mysqlEnum("package_type", ["free", "silver", "gold"]).notNull().default("free"),
     deleted: boolean("deleted").default(false),
     createdAt: datetime("created_at"),
     updatedAt: datetime("updated_at"),
@@ -334,6 +334,7 @@ export const storePp = mysqlTable("store_pp", {
     namaToko: varchar("nama_toko", { length: 50 }).notNull(),
     logo: varchar("logo", { length: 50 }).notNull(),
     deskripsi: varchar("deskripsi", { length: 50 }).notNull(),
+    packageType: mysqlEnum("package_type", ["free", "silver", "gold"]).notNull().default("free"),
 });
 
 export const warehouses = mysqlTable("warehouses", {
@@ -354,4 +355,21 @@ export const kategoriCatatan = mysqlTable("kategori_catatan", {
     idToko: int("id_toko").notNull().default(1),
     nama: varchar("nama", { length: 100 }).notNull(),
     jenis: varchar("jenis", { length: 100 }).notNull(),
+});
+
+export const features = mysqlTable("features", {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 100 }).notNull(),
+    key: varchar("key", { length: 100 }).notNull().unique(), // e.g., 'report_export'
+    description: text("description"),
+    createdAt: datetime("created_at"),
+    updatedAt: datetime("updated_at"),
+});
+
+export const planFeatures = mysqlTable("plan_features", {
+    id: serial("id").primaryKey(),
+    plan: mysqlEnum("plan", ["free", "silver", "gold"]).notNull(),
+    featureId: int("feature_id").notNull(),
+    createdAt: datetime("created_at"),
+    updatedAt: datetime("updated_at"),
 });
